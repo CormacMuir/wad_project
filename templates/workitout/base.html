@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load rango_template_tags %}
+
+<html>
+    <head lang="en">
+        <meta charset="UTF-8" />
+        <title>
+            
+            {% block title_block %}               
+            {% endblock %}
+        </title>
+    </head>
+    <body>
+        <img src="{% static 'images/wad-logo.png' %}" alt="WorkItOut" />
+        <div>
+        {% block body_block %}
+        {% endblock %}
+        </div>
+        <div> 
+            {% block sidebar_block %}
+                <!-- Could be newsfeed or Jscript map -->
+            {% endblock %}
+        </div>
+        <hr />
+        <div>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'auth_password_change' %}">Change Password</a></li>
+                    <li><a href="{% url 'auth_logout' %}?next={% url 'rango:index'%}">Logout</a></li>
+                    <li><a href="{% url 'create-workout' %}">Create New Workout</a></li>
+                {% else %}
+                    <li><a href="{% url 'registration_register' %}">Sign Up</a></li>
+                    <li><a href="{% url 'auth_login' %}">Login</a></li>
+                {% endif %}
+
+                <li><a href="{% url 'workitout:home' %}">Home</a></li>
+				<li><a href="{% url 'workitout:about' %}">About</a></li>
+				<li><a href="{% url 'workitout:search' %}">Search</a></li>
+                
+                
+            </ul>
+        </div>
+    </body>
+</html>
