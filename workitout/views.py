@@ -1,19 +1,18 @@
 from django.shortcuts import render
 
-# Create your views here.
 
 def home(request):
 
-    return render(request, 'rango/home.html')
+    return render(request, 'workitout/home.html')
 
-def create-workout(request):
+def create_workout(request):
 
-    return render(request, 'rango/create-workout.html')
+    return render(request, 'workitout/create-workout.html')
 
 def search(request):
 
-    return render(request, 'rango/search.html')
+    return render(request, 'workitout/search.html')
     
-def user-page(request):
+def user_page(request):
 
-    return render(request, 'rango/user-page.html')
+    return render(request, 'workitout/user-page.html')
