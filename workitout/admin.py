@@ -2,6 +2,7 @@ from django.contrib import admin
 from workitout.models import Exercise
 from workitout.models import UserProfile
 from workitout.models import Workout
+from workitout.models import ExInWorkout
 from workitout.models import MuscleGroup
 from workitout.models import Muscle
 from workitout.models import Tag
@@ -31,6 +32,9 @@ class EquipmentAdmin(admin.ModelAdmin):
 class WorkoutAdmin(admin.ModelAdmin):
     list_display = ('id', 'title')
 
+class ExInWorkoutAdmin(admin.ModelAdmin):
+    list_display = ('id', 'workout', 'exercise')
+
 
 admin.site.register(Exercise, ExerciseAdmin)
 admin.site.register(MuscleGroup, MuscleGroupAdmin)
@@ -39,3 +43,4 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(Equipment, EquipmentAdmin)
 admin.site.register(UserProfile)
 admin.site.register(Workout, WorkoutAdmin)
+admin.site.register(ExInWorkout, ExInWorkoutAdmin)

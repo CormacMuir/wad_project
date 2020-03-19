@@ -55,11 +55,6 @@ class Exercise(models.Model):
     def __str__(self):
         return self.title
 
-class ExInWorkout(models.Model):
-
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    sets = models.IntegerField()
-    reps = models.IntegerField()
 
 class Workout(models.Model):
     title = models.CharField(max_length=128)
@@ -71,10 +66,17 @@ class Workout(models.Model):
     tags = models.ManyToManyField(Tag)
     isPrivate = models.BooleanField(default=False)
 
-    exercises = models.ManyToManyField(Exercise) #use exercise id to find ExInWorkout which has the sets and reps
-
     def __str__(self):
         return self.title
+
+
+class ExInWorkout(models.Model):
+
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    sets = models.IntegerField()
+    reps = models.IntegerField()
+
 
 class UserProfile(models.Model):
     # Link UserProfile to a User model instance.
@@ -84,8 +86,8 @@ class UserProfile(models.Model):
     bio = models.TextField()
     picture = models.ImageField(upload_to='profile_images', blank=True)
     saved = models.ManyToManyField(Workout)
-    followers = models.ManyToManyField(User, related_name='user_followers')
-    following = models.ManyToManyField(User, related_name='user_following')
+    followers = models.ManyToManyField(User, related_name='user_followers', blank=True)
+    following = models.ManyToManyField(User, related_name='user_following', blank=True)
     isPrivate = models.BooleanField(default=False)  #default is public and they set private
     isVerified = models.BooleanField(default=False) #default user is not verified
 
