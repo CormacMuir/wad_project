@@ -12,7 +12,19 @@
         </title>
     </head>
     <body>
-        <img src="{% static 'images/wad-logo.png' %}" alt="WorkItOut" />
+        <img src="{% static 'images/wad-logo-blue.jpg' %}" alt="WorkItOut"height="50"width="100" />
+        <div>
+            <ul>
+
+
+                <li><a href="{% url 'workitout:home' %}">Home</a></li>
+				<li><a href="{% url 'workitout:about' %}">About</a></li>
+                <li><a href="{% url 'workitout:search' %}">Search</a></li>
+                <li><a href="{% url 'workitout:create-workout' %}">Create Workout</a></li>
+                
+                
+            </ul>
+        </div>
         <div>
         {% block body_block %}
         {% endblock %}
@@ -23,16 +35,6 @@
             {% endblock %}
         </div>
         <hr />
-        <div>
-            <ul>
-
-
-                <li><a href="{% url 'workitout:home' %}">Home</a></li>
-				<li><a href="{% url 'workitout:about' %}">About</a></li>
-				<li><a href="{% url 'workitout:search' %}">Search</a></li>
-                
-                
-            </ul>
-        </div>
+        
     </body>
 </html>
