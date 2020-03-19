@@ -1,4 +1,5 @@
 from django.contrib import admin
+from workitout.models import Workout,Exercise
 from workitout.models import Exercise
 from workitout.models import UserProfile
 from workitout.models import Workout
@@ -8,7 +9,7 @@ from workitout.models import Muscle
 from workitout.models import Tag
 from workitout.models import Equipment
 
-
+    
 class ExerciseAdmin(admin.ModelAdmin):
     list_display = ('id', 'title',)
 
@@ -30,6 +31,7 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 
 class WorkoutAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug':('title',)}
     list_display = ('id', 'title')
 
 class ExInWorkoutAdmin(admin.ModelAdmin):

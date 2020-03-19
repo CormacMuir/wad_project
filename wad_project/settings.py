@@ -140,3 +140,4 @@ MEDIA_URL = '/media/'
 REGISTRATION_OPEN = True
 REGISTRATION_AUTO_LOGIN = True
 LOGIN_REDIRECT_URL = 'workitout'
+LOGIN_URL="auth_login"
