@@ -8,11 +8,26 @@ from workitout.models import Exercise, Description, MuscleGroup, Muscle, Tag, Eq
 
 def populate():
 
+    
+    muscle_groups = read_json("db_data/muscle_groups.json")
+    for muscle_group in muscle_groups:
+        mg = MuscleGroup.objects.get_or_create(name=muscle_group)[0]
 
-    with open("db_data/everkinetic.json", 'r') as f:
-        exercises = json.load(f)
+    muscles = read_json("db_data/muscles.json")
+    for muscle in muscles:
+        m = Muscle.objects.get_or_create(name=muscle)[0]
 
- 
+    tags = read_json("db_data/tags.json")
+    for tag in tags:
+        t = Tag.objects.get_or_create(name=tag)[0]
+
+    equipment = read_json("db_data/equipment_list.json")   
+    for equip in equipment:
+        eq = Equipment.objects.get_or_create(name=equip)[0]
+    
+
+
+    exercises = read_json("db_data/everkinetic.json")
     for ex in exercises:
         title = ex['title']
         difficulty = ex['difficulty']
@@ -43,9 +58,10 @@ def add_exercise(title, difficulty, image_id, primer, steps, tips, muscle_group,
         ex.save()
 
     for tag in tags:
-        t = Tag.objects.get_or_create(name=tag)[0]
-        ex.tags.add(t)
-        ex.save()
+        if len(tag) > 1:
+            t = Tag.objects.get_or_create(name=tag)[0]
+            ex.tags.add(t)
+            ex.save()
     
     for equip in equipment:
         eq = Equipment.objects.get_or_create(name=equip)[0]
@@ -55,6 +71,11 @@ def add_exercise(title, difficulty, image_id, primer, steps, tips, muscle_group,
     return ex
 
 
+def read_json(filename):
+    with open(filename, 'r') as f:
+        data = json.load(f)
+    return data
+
 if __name__ == '__main__':
-    print('Starting Rango population script...')
+    print('Starting exercise population script...')
     populate()

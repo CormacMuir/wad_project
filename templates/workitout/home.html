@@ -3,3 +3,18 @@
 {% block title_block %}
     Homepage
 {% endblock %}
+
+{% block body_block %}
+<div>
+{% if workouts %}
+    <ul>
+        {% for workout in workouts %}
+        <li>{{workout.title}}</li></ul></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <strong>No workouts have been created yet.</strong>
+    {% endif %}
+</div>
+
+{% endblock %}
