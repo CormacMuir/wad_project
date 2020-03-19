@@ -5,6 +5,12 @@
 <html>
     <head lang="en">
         <meta charset="UTF-8" />
+        <style> table#frontTab {
+            width: 100%;
+            background-color: #d5d8db;
+          }
+          </style>
+       
         <title>
             
             {% block title_block %}               
@@ -15,8 +21,12 @@
         <img src="{% static 'images/wad-logo-blue.jpg' %}" alt="WorkItOut"height="50"width="100" />
         <div>
             <ul>
-
-
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Logout</a></li>
+                {% else %}
+                <li><a href="{% url 'auth_login' %}">Login</a></li>
+                <li><a href="{% url 'registration_register' %}">Register</a></li>
+                {% endif %}
                 <li><a href="{% url 'workitout:home' %}">Home</a></li>
 				<li><a href="{% url 'workitout:about' %}">About</a></li>
                 <li><a href="{% url 'workitout:search' %}">Search</a></li>

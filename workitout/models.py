@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 
 class MuscleGroup(models.Model):
@@ -65,14 +66,19 @@ class Workout(models.Model):
     likes = models.ManyToManyField(User, related_name='workout_likes')
     tags = models.ManyToManyField(Tag)
     isPrivate = models.BooleanField(default=False)
+    slug=models.SlugField(unique=False)
+
 
     def __str__(self):
         return self.title
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Workout, self).save(*args, **kwargs)
 
 
 class ExInWorkout(models.Model):
 
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    workout = models.ForeignKey(Workout,default = 1, on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     sets = models.IntegerField()
     reps = models.IntegerField()

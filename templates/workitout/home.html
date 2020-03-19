@@ -7,11 +7,21 @@
 {% block body_block %}
 <div>
 {% if workouts %}
-    <ul>
+
+    <table style="width:80%" id="frontTab">
+        <tr>
+            <th>Workout Name</th>
+            <th>Duration</th>
+            <th>Likes</th>
+          </tr>
         {% for workout in workouts %}
-        <li>{{workout.title}}</li></ul></li>
+        <tr>
+            <th>{{workout.title}}</th>
+            <th>{{workout.duration}}</th>
+            <th>{{workout.numLikes}}</th>
+        </tr>
         {% endfor %}
-    </ul>
+    
     {% else %}
         <strong>No workouts have been created yet.</strong>
     {% endif %}
