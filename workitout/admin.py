@@ -11,6 +11,7 @@ from workitout.models import Equipment
 
     
 class ExerciseAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug':('title',)}
     list_display = ('id', 'title',)
 
 

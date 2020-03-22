@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from workitout.models import Workout 
+from workitout.models import Workout , Exercise
 from django.forms.models import model_to_dict
 
 
@@ -33,7 +33,48 @@ def create_workout(request):
 def search(request):
 
     return render(request, 'workitout/search.html')
+
+def about(request):
+
+    return render(request, 'workitout/about.html')
     
 def user_page(request):
 
     return render(request, 'workitout/user-page.html')
+
+def exercises(request):
+
+    exercise_list = Exercise.objects.order_by('title')
+    context_dict={}
+    context_dict['exercises'] = exercise_list
+    return render(request, 'workitout/exercises.html', context_dict)
+
+def show_exercise(request, exercise_title_slug):
+    context_dict = {}
+    try:
+
+        exercise = Exercise.objects.get(slug=exercise_title_slug)
+
+        # parse exercise object and add individual fields to context dict
+        context_dict['title'] = exercise.title
+        
+        diff_dict = {1:'Easy', 2:'Medium', 3:'Hard'} #can change these
+        context_dict['difficulty'] = diff_dict[exercise.difficulty]
+
+        context_dict['primer'] = exercise.description.primer
+        context_dict['steps'] = exercise.description.steps.split('$$')
+        context_dict['tips'] = exercise.description.tips.split('$$')
+        if context_dict['tips'] == ['']:
+            context_dict['tips'] = None
+
+        context_dict['muscle_group'] = exercise.muscle_group
+        context_dict['muscles'] = [m.name for m in exercise.muscles.all()]
+        context_dict['tags'] = [t.name for t in exercise.tags.all()]
+        context_dict['equipment'] = [e.name for e in exercise.equipment.all()]
+
+       
+
+    except Exercise.DoesNotExist:
+        context_dict['exercise'] = None
+
+    return render(request, 'workitout/exercise.html', context=context_dict)

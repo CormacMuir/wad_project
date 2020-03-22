@@ -1,0 +1,22 @@
+{% extends 'workitout/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    All Exercises
+{% endblock %}
+
+{% block body_block %}
+<div>
+
+    <table style="width:80%" id="frontTab">
+        <tr>
+            <th>Exercise</th>
+        </tr>
+        {% for exercise in exercises %}
+        <tr>
+            <td><a href="/workitout/exercise/{{ exercise.slug }}/">{{exercise.title}}</a></td>
+        </tr>
+        {% endfor %}
+
+</div>
+
+{% endblock %}

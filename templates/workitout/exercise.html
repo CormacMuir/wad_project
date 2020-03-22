@@ -1,0 +1,41 @@
+{% extends 'workitout/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    {{ title }}
+{% endblock %}
+
+{% block body_block %}
+<div>
+        <h2>{{ title }}</h2>
+        <div>{{ muscle_group }}</div>
+        <div>{{ muscles }}</div>
+        <div>{{ tags }}</div>
+        {% if equipment %}
+        <div>
+            {{ equipment }}
+        </div>
+        {% endif %}
+        
+        <div>{{ primer }}</div>
+        <div>
+            <b>Steps:</b>
+                <ol>
+                    {% for step in steps %}
+                        <li>{{ step }}</li>
+                    {% endfor %}
+                </ol>
+        </div>
+        {% if tips %}
+        <div>
+            <b>Tips:</b>
+                <ul>
+                    {% for tip in tips %}
+                        <li>{{ tip }}</li>
+                    {% endfor %}
+                </ul>
+        </div>
+        {% endif %}
+</div>
+
+
+{% endblock %}

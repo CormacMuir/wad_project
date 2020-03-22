@@ -52,10 +52,15 @@ class Exercise(models.Model):
     muscles = models.ManyToManyField(Muscle)
     tags = models.ManyToManyField(Tag)
     equipment = models.ManyToManyField(Equipment)
+    slug=models.SlugField(unique=True)
+
 
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Exercise, self).save(*args, **kwargs)
 
 class Workout(models.Model):
     title = models.CharField(max_length=128)
