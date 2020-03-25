@@ -35,6 +35,12 @@
                 </ul>
         </div>
         {% endif %}
+
+        <div>
+            {% for image_path in image_paths %}
+            <img src="{% static image_path %}" height=200 alt="exercise image"/>
+            {% endfor %}
+        </div>
 </div>
 
 

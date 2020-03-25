@@ -46,7 +46,6 @@ class Exercise(models.Model):
 
     title = models.CharField(max_length=128)
     difficulty = models.IntegerField()
-    image_id = models.CharField(max_length=16)
     description = models.OneToOneField(Description, on_delete=models.PROTECT)
     muscle_group = models.ForeignKey(MuscleGroup, on_delete=models.PROTECT)
     muscles = models.ManyToManyField(Muscle)

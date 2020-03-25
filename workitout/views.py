@@ -71,6 +71,7 @@ def show_exercise(request, exercise_title_slug):
         context_dict['muscles'] = [m.name for m in exercise.muscles.all()]
         context_dict['tags'] = [t.name for t in exercise.tags.all()]
         context_dict['equipment'] = [e.name for e in exercise.equipment.all()]
+        context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
 
        
 

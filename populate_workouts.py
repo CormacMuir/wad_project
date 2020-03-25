@@ -26,11 +26,11 @@ def populate():
     workouts = [{'creator': 'TheChadinator', 'title': 'Stronglifts',
     'description': 'A fullbody workout for building strength.',
     'duration': 60,
-    'exercises': [['Barbell Squat',5,5],['Bench Press: Barbell',5,5],['Bent Over Row with Barbell',5,5]]},
+    'exercises': [['Squats: Barbell',5,5],['Bench Press: Barbell',5,5],['Pull Down: V Bar',5,5]]},
     {'creator': 'TheChadinator', 'title': 'Big Arm Builder',
     'description': 'A workout for building big arms.',
     'duration': 45,
-    'exercises': [['Biceps Curl: Dumbbell',3,8],['Chin Ups',3,8],['Triceps Pushdown: Cable',3,8]]}]
+    'exercises': [['Bicep Curls: Dumbbell',3,8],['Chin Ups',3,8],['Triceps Pushdown: Cable',3,8]]}]
     
     for workout in workouts:
         creator = User.objects.get(username=workout['creator'])

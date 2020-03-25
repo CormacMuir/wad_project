@@ -31,7 +31,6 @@ def populate():
     for ex in exercises:
         title = ex['title']
         difficulty = ex['difficulty']
-        image_id = ex['id']
         primer = ex['primer']
         steps = ex['steps_string']
         tips = ex['tips_string']
@@ -40,17 +39,16 @@ def populate():
         muscles = ex['muscles']
         tags = ex['tags']
         equipment = ex['equipment']
-        
-        add_exercise(title, difficulty, image_id, primer, steps, tips, muscle_group, muscles, tags, equipment)
+        add_exercise(title, difficulty, primer, steps, tips, muscle_group, muscles, tags, equipment)
 
 
-def add_exercise(title, difficulty, image_id, primer, steps, tips, muscle_group, muscles, tags, equipment):
+def add_exercise(title, difficulty, primer, steps, tips, muscle_group, muscles, tags, equipment):
 
     d = Description.objects.get_or_create(primer=primer, steps=steps, tips=tips)[0]
     mg = MuscleGroup.objects.get_or_create(name=muscle_group)[0]
 
     
-    ex = Exercise.objects.get_or_create(title=title, difficulty=difficulty, image_id=image_id, description=d, muscle_group=mg)[0]
+    ex = Exercise.objects.get_or_create(title=title, difficulty=difficulty, description=d, muscle_group=mg)[0]
 
     for muscle in muscles:
         m = Muscle.objects.get_or_create(name=muscle)[0]
