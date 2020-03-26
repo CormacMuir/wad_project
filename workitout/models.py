@@ -100,6 +100,5 @@ class UserProfile(models.Model):
     following = models.ManyToManyField(User, related_name='user_following', blank=True)
     isPrivate = models.BooleanField(default=False)  #default is public and they set private
     isVerified = models.BooleanField(default=False) #default user is not verified
-
     def __str__(self):
         return self.user.username

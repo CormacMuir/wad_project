@@ -3,3 +3,47 @@
 {% block title_block %}
     User Profile
 {% endblock %}
+
+{% block body_block %}
+<h1>{{username}}</h1>
+
+<img src="{{ user.picture.url }}" alt="profile picture">
+{% if private %}
+    This profile is private.
+{% else %}
+{{bio}}
+<div id="following"></div>
+following: {{following}}
+followers: {{followers}}
+{{verified}}
+{{bio}}
+
+
+<div>
+    {% if s_workouts %}
+    <h2>Saved Workouts</h2>
+    
+        <table style="width:80%" id="frontTab">
+            <tr>
+                <th>Workout Name</th>
+                <th>Duration</th>
+                <th>Likes</th>
+              </tr>
+            {% for workout in s_workouts %}
+            <tr>
+                <th>{{workout.title}}</th>
+                <th>{{workout.duration}}</th>
+                <th>{{workout.numLikes}}</th>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+
+
+
+
+
+
+{% endif %}
+{% endblock %}
