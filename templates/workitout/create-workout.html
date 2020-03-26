@@ -3,3 +3,63 @@
 {% block title_block %}
     Create a Workout
 {% endblock %}
+
+{%  block body_block %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-lg-7 offset-lg-1">
+            <form id="workout_form" method="post" action="workitout/create-workout">{% csrf_token %}
+
+                {% for hidden in form.hidden_fields %} 
+                    {{ hidden }} 
+                {% endfor %} 
+
+                {% for field in form.visible_fields %} 
+                    {{ field.errors }}  
+
+                    <div class="form-group">
+                        <label>{{ field.help_text }}</label>
+                        <div class="form-control">{{ field }}</div>
+                    </div>
+
+                {% endfor %} 
+                <input type="submit" name="submit" value="Create Workout" />
+
+            </form>
+        </div>
+	</div>
+</div>
+
+
+
+
+<!---
+<div class="container">
+	<div class="row">
+		<div class="col-lg-7 offset-lg-1">
+			<form class="create-form" method="post" >{% csrf_token %}
+
+				<-- title --
+				<div class="form-group">
+					<label for="id_title">Workout Title</label>
+					<input class="form-control" type="text" name="title" id="id_title" placeholder="Title" required autofocus>
+				</div>
+
+				<-- Body --
+				<div class="form-group">
+					<label for="id_body">Workout Description</label>
+					<textarea class="form-control" rows="5" type="text" name="description" id="id_body" placeholder="My Workout involves..." required></textarea>
+				</div>
+
+
+				<-- Submit btn --
+				<button class="submit-button btn btn-lg btn-primary btn-block" type="submit">POST</button>
+			</form>	
+		</div>
+	</div>
+</div>
+-->
+
+
+{%  endblock %}

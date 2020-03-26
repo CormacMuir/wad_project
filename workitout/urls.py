@@ -11,4 +11,7 @@ urlpatterns = [
     path('about',views.about,name='about'),
     path('exercises',views.exercises,name='exercises'),
     path('exercise/<slug:exercise_title_slug>/',views.show_exercise, name='show_exercise'),
-    path('user/<slug:user_id_slug>/',views.user_page,name='user-page'),]
+    path('user/<slug:user_id_slug>/',views.user_page,name='user-page'),
+    
+    path('must_authenticate', views.must_authenticate, name='must_authenticate'),
+    ]
