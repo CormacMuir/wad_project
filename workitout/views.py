@@ -42,14 +42,20 @@ def exercises(request):
 def user_page(request, user_name):
     context_dict = {}
     try:
-        workout_list = []
-
+        saved = []
+        created = []
         user_obj = User.objects.get(username=user_name)
         user1 = UserProfile.objects.get(user=user_obj)
 
-
         for w in user1.saved.all():
-            workout_list.append(w)
+            w.numLikes = len(w.likes.all())
+            saved.append(w)
+        
+        for w in Workout.objects.filter(creator=user_obj):
+            w.numLikes = len(w.likes.all())
+            created.append(w)
+
+
         context_dict['user'] = user1
         context_dict['username'] = user_obj.username
         context_dict['picture'] = user1.picture
@@ -58,7 +64,8 @@ def user_page(request, user_name):
         context_dict['followers'] = len(user1.followers.all())
         context_dict['verified'] = user1.isVerified
         context_dict['private'] = user1.isPrivate
-        context_dict['s_workouts'] = workout_list
+        context_dict['saved'] = saved
+        context_dict['created'] = created
     except User.DoesNotExist:
         context_dict['user'] = None
 
