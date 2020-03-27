@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from workitout.models import Workout , Exercise, UserProfile
 from django.forms.models import model_to_dict
+from django.urls import reverse
 
 from workitout.forms import CreateWorkoutForm
 
@@ -17,10 +18,6 @@ def home(request):
     return render(request, 'workitout/home.html', context_dict)
 
 
-
-
-
-
 def create_workout(request):
 
     context = {}
@@ -28,7 +25,7 @@ def create_workout(request):
     # if user isnt authenticated then prompt them to login/register
     user = request.user
     if not user.is_authenticated:
-        return redirect('must_authenticate')
+        return redirect(reverse('workitout:must_authenticate'))
 
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
@@ -48,17 +45,11 @@ def create_workout(request):
 
 def must_authenticate(request):
 
-    return render(request, 'workitout/must_authenticate.html', {})
+    return render(request, 'workitout/must_authenticate.html')
 
 
-
-
-
-
-
-
-
-
+def test(request):
+    return redirect('home')
 
 def search(request):
 
