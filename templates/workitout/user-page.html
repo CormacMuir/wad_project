@@ -5,23 +5,25 @@
 {% endblock %}
 
 {% block body_block %}
+{% if user %}
 <h1>{{username}}</h1>
 
-<img src="{{ user.picture.url }}" alt="profile picture">
+<img src="{{ user.picture.url }}" alt="profile picture" height="90 " width="90">
 {% if private %}
     This profile is private.
 {% else %}
 {{bio}}
-<div id="following"></div>
-following: {{following}}
-followers: {{followers}}
-{{verified}}
-{{bio}}
+<div id="following">following: {{following}}</div>
+<div id="followers">followers: {{followers}}</div>
 
+{% if verified %}
+This user is verified
+{% endif %}
 
 <div>
-    {% if s_workouts %}
     <h2>Saved Workouts</h2>
+    {% if saved %}
+    
     
         <table style="width:80%" id="frontTab">
             <tr>
@@ -29,21 +31,43 @@ followers: {{followers}}
                 <th>Duration</th>
                 <th>Likes</th>
               </tr>
-            {% for workout in s_workouts %}
+            {% for workout in saved %}
             <tr>
                 <th>{{workout.title}}</th>
                 <th>{{workout.duration}}</th>
                 <th>{{workout.numLikes}}</th>
             </tr>
             {% endfor %}
+        {% else %}
+        User has no saved workouts
         {% endif %}
     </div>
 
+    <div>
+        <h2>Created Workouts</h2>
+        {% if created %}
+        
+        
+            <table style="width:80%" id="frontTab">
+                <tr>
+                    <th>Workout Name</th>
+                    <th>Duration</th>
+                    <th>Likes</th>
+                  </tr>
+                {% for workout in created %}
+                <tr>
+                    <th>{{workout.title}}</th>
+                    <th>{{workout.duration}}</th>
+                    <th>{{workout.numLikes}}</th>
+                </tr>
+                {% endfor %}
+            {% else %}
+            User has not created any workouts
+            {% endif %}
+        </div>
 
-
-
-
-
-
+{% endif %}
+{% else %}
+User not found
 {% endif %}
 {% endblock %}
