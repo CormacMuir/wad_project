@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.models import User
 from workitout.models import Workout , Exercise, UserProfile
 from django.forms.models import model_to_dict
+from workitout.forms import UserProfileForm
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -60,6 +63,24 @@ def user_page(request, user_name):
         context_dict['user'] = None
 
     return render(request, 'workitout/user-page.html',context=context_dict)
+
+@login_required
+def register_profile(request):
+    form = UserProfileForm()
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            user_profile = form.save(commit=False)
+            user_profile.user = request.user
+            user_profile.save()
+            return redirect(reverse('workitout:home'))
+        else:
+            print(form.errors)
+    context_dict = {'form': form}
+    return render(request, 'workitout/profile_registration.html', context_dict)
+
+
 
 def show_exercise(request, exercise_title_slug):
     context_dict = {}
