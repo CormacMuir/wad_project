@@ -62,15 +62,22 @@ class Exercise(models.Model):
         super(Exercise, self).save(*args, **kwargs)
 
 class Workout(models.Model):
-    title = models.CharField(max_length=128)
-    description = models.TextField()
+
+    # required 
+    title = models.CharField(max_length=128, null=False, blank=False)
+    description = models.TextField(max_length=5000, null=False, blank=False)
+
     creator = models.ForeignKey(User, related_name='workout_creator', on_delete=models.CASCADE)
-    duration = models.IntegerField()
-    difficulty = models.IntegerField()
+    
+    duration = models.IntegerField(default=69)
+    difficulty = models.IntegerField(default=1)
     likes = models.ManyToManyField(User, related_name='workout_likes')
     tags = models.ManyToManyField(Tag)
     isPrivate = models.BooleanField(default=False)
     slug=models.SlugField(unique=False)
+
+    # - Marty. Added this
+    date_published = models.DateTimeField(auto_now_add=True, verbose_name="Date Published")
 
 
     def __str__(self):

@@ -13,4 +13,6 @@ urlpatterns = [
     path('exercise/<slug:exercise_title_slug>/',views.show_exercise, name='show_exercise'),
     path('user/<slug:user_name>/',views.user_page,name='user-page'),
     path('register_profile/', views.register_profile, name='register_profile'),
-]
+    path('test', views.test, name='test'),
+    path('must_authenticate', views.must_authenticate, name='must_authenticate'),
+    ]

@@ -1,0 +1,22 @@
+{% extends 'workitout/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    Authenticate
+{% endblock %}
+
+{%  block body_block %}
+
+    <div class="container">
+        <div class="d-flex flex-column">
+            <p class="m-auto">You must authenticate to view this page. </p>
+
+            <p class="m-auto">
+                <a href="{% url 'registration_register' %}">Create an account</a> or 
+                <a href="{% url 'auth_login' %}">login</a>.
+		    </p>
+        </div>
+    </div>
+
+
+
+{%  endblock %}
