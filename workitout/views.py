@@ -36,8 +36,8 @@ def create_workout(request):
 
         # foreign key needs to be set before committing the save ^
         # get the userprofile ID that matches the email of the user
-        creator = UserProfile.objects.filter(email=user.email).first()
-        obj.creator = creator
+    
+        obj.creator = user
         obj.save()
         form = CreateWorkoutForm()
 
@@ -49,9 +49,6 @@ def must_authenticate(request):
 
     return render(request, 'workitout/must_authenticate.html')
 
-
-def test(request):
-    return redirect('home')
 
 def search(request):
 
