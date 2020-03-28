@@ -33,7 +33,7 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 class WorkoutAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug':('title',)}
-    list_display = ('id', 'title')
+    list_display = ('id', 'title', 'difficulty')
 
 class ExInWorkoutAdmin(admin.ModelAdmin):
     list_display = ('id', 'workout', 'exercise')

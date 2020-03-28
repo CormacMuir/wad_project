@@ -146,3 +146,11 @@ def show_exercise(request, exercise_title_slug):
         context_dict['exercise'] = None
 
     return render(request, 'workitout/exercise.html', context=context_dict)
+
+def workout_page(request, id):
+    context_dict = {}
+    try:
+        workout = Workout.objects.get(id=id)
+        
+    except Exercise.DoesNotExist:
+        context_dict['exercise'] = None

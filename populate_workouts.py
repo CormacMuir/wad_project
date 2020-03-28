@@ -44,11 +44,9 @@ def populate():
         title = workout['title']
         description = workout['description']
         duration=workout['duration']
-        #placeholder difficulty
-        difficulty = 8
         exercises = workout['exercises']
 
-        w = Workout.objects.get_or_create(creator=creator, title=title, description=description, duration=duration, difficulty=difficulty)[0]
+        w = Workout.objects.get_or_create(creator=creator, title=title, description=description, duration=duration)[0]
         w.likes.add(User.objects.get(username='TheChadinator'))
         for exercise in exercises:
             ex_title = exercise[0]

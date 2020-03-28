@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from django.db.models.signals import post_save
 
 
 class MuscleGroup(models.Model):
@@ -75,13 +76,12 @@ class Workout(models.Model):
     tags = models.ManyToManyField(Tag)
     isPrivate = models.BooleanField(default=False)
     slug=models.SlugField(unique=False)
-
-    # - Marty. Added this
     date_published = models.DateTimeField(auto_now_add=True, verbose_name="Date Published")
 
 
     def __str__(self):
-        return self.title
+        return self.slug
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(Workout, self).save(*args, **kwargs)
@@ -93,6 +93,27 @@ class ExInWorkout(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     sets = models.IntegerField()
     reps = models.IntegerField()
+
+# method to work out the tags and difficulty of the workout from exercises
+# uses signal to call method after an exercise is added to the workout
+def get_workout_attributes(sender, instance, **kwargs):
+    workout = instance.workout
+    exercises = [exiw.exercise for exiw in ExInWorkout.objects.filter(workout=workout)]
+
+    difficulty = 0.0
+    for ex in exercises:
+        tags = ex.tags.all()
+        for tag in tags:
+            workout.tags.add(tag)
+        difficulty += ex.difficulty
+    difficulty = difficulty/len(exercises)
+    difficulty = (difficulty - 0.5) * 4 # this makes the difficulty a score out of 10, can be changed
+
+    workout.difficulty = int(difficulty)
+    workout.save()
+
+post_save.connect(get_workout_attributes, sender=ExInWorkout)
+
 
 
 class UserProfile(models.Model):
