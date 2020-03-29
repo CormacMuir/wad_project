@@ -62,9 +62,11 @@ def about(request):
 
 def exercises(request):
 
-    exercise_list = Exercise.objects.order_by('title')
+    exercise_list = Exercise.objects.order_by('muscle_group')
     context_dict={}
     context_dict['exercises'] = exercise_list
+
+    #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
 
 def user_page(request, user_name):

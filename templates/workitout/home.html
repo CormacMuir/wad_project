@@ -5,26 +5,47 @@
 {% endblock %}
 
 {% block body_block %}
-<div>
-{% if workouts %}
 
-    <table style="width:80%" id="frontTab">
-        <tr>
-            <th>Workout Name</th>
-            <th>Duration</th>
-            <th>Likes</th>
-          </tr>
+<style type="text/css">
+    .card{
+        max-width: 700px;
+    }
+    .container{
+        padding:20px;
+    }
+</style>
+
+<div class="container">
+	<div class="row">
+
         {% for workout in workouts %}
-        <tr>
-            <th><a href='workitout/workout/{{ workout.id }}'>{{workout.title}}</a></th>
-            <th>{{workout.duration}}</th>
-            <th>{{workout.numLikes}}</th>
-        </tr>
-        {% endfor %}
-    
-    {% else %}
-        <strong>No workouts have been created yet.</strong>
-    {% endif %}
-</div>
+        
+        <a href="/workitout/workout/{{ workout.id }}/">
+            <div class="card m-2">
+                <img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
+                
+                <div class="card-body mt-2 mb-2">
+                <h2 class="card-title">{{workout.title}}</h2>
 
+                <!-- Not working?
+                <h6 class="card-subtitle mb-2 text-muted">
+                    {{workout.likes}} users like this workout.
+                 </h6>
+                 -->
+
+
+                <p class="card-text">{{workout.description}}</p>
+                </div>
+                
+                <div class="card-footer text-muted">
+                Posted on {{workout.date_published}} by {{workout.creator}}
+                </div>
+            </div>
+        </a>
+
+        {% endfor %}
+
+
+	</div>
+</div>
 {% endblock %}

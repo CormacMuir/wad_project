@@ -5,18 +5,48 @@
 {% endblock %}
 
 {% block body_block %}
-<div>
-        <h2>{{ title }}</h2>
-        <div>{{ description }}</div>
-        <div>{{ tags }}</div>
-        <div></div>
-        <div>Difficulty: {{ difficulty }}</div>
-        <div>Duration: {{ duration }}</div>
-        <div></div>
-        <div>Creator: {{ creator }}</div>
-        <div>Date Created: {{ date }}</div>
-        <div>Likes: {{ likes }}</div>
-        
+
+<style type="text/css">
+	.card{
+		max-width: 700px;
+        color:steelblue;
+	}
+	.container{
+		padding:20px;
+	}
+    .blue{
+        color:rgb(0, 153, 255);
+    }
+</style>
+
+<div class="container">
+	<div class="row">
+
+		<!-- Blog Post -->
+		<div class="card m-auto">
+			<img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
+			<div class="card-body mt-2 mb-2">
+              <h1 class="card-title">{{ title }}</h1>
+              <h6 class="card-subtitle mb-2 text-muted">
+                  Difficulty : {{ difficulty }} <br/>
+                  Duration : {{ duration }} <br/>
+                  {{likes}} users like this workout.
+
+              </h6>
+
+              <div class="card-body mt-2 mb-2">
+                  {{description}}
+              </div>
+
+			  <p class = "blue" >{{ tags }} Place, 
+                  Holder, For, Tags, To, See, If, It, Would, Turn, Blue, As, There, Are, no, tags, yet</p>
+			</div>
+			<div class="card-footer text-muted">
+			  Created on {{ date_published }} by {{creator}}
+			</div>
+		</div>
+
+	</div>
 </div>
 
 

@@ -5,43 +5,71 @@
 {% endblock %}
 
 {% block body_block %}
-<div>
-        <h2>{{ title }}</h2>
-        <div>{{ muscle_group }}</div>
-        <div>{{ muscles }}</div>
-        <div>{{ tags }}</div>
-        {% if equipment %}
-        <div>
-            {{ equipment }}
-        </div>
-        {% endif %}
-        
-        <div>{{ primer }}</div>
-        <div>
-            <b>Steps:</b>
-                <ol>
-                    {% for step in steps %}
-                        <li>{{ step }}</li>
-                    {% endfor %}
-                </ol>
-        </div>
-        {% if tips %}
-        <div>
-            <b>Tips:</b>
-                <ul>
-                    {% for tip in tips %}
-                        <li>{{ tip }}</li>
-                    {% endfor %}
-                </ul>
-        </div>
-        {% endif %}
 
-        <div>
-            {% for image_path in image_paths %}
-            <img src="{% static image_path %}" height=200 alt="exercise image"/>
+
+<style type="text/css">
+	.card{
+		max-width: 700px;
+        color:steelblue;
+	}
+	.container{
+		padding:20px;
+	}
+    .blue{
+        color:rgb(0, 153, 255);
+    }
+</style>
+
+<div class="container">
+	<div class="row">
+
+		<div class="card m-auto">
+			{% for image_path in image_paths %}
+                <img class="card-img-top" src="{% static image_path %}"  alt="exercise image"/>
             {% endfor %}
-        </div>
-</div>
+			<div class="card-body mt-2 mb-2">
 
+                <h1 class="card-title">{{ title }}</h1>
+
+                </br>
+
+                <h6 class="card-subtitle mb-2 text-muted">
+                   {{primer}}
+                </h6>
+
+                </br>
+
+                <div class="card-header">
+                    Muscle Group : {{ muscle_group }} <br/>
+                    Target : {{ muscles }} </br>
+                    Difficulty : {{ difficulty }}
+                  </div>
+			</div>
+
+            <ul class="list-group list-group-flush">
+
+                <li class="list-group-item">Follow These Steps :</li>
+
+                {% for step in steps %}
+                    <li class="list-group-item">{{step}}</li>
+                {% endfor %}
+
+            </ul>
+
+            <div class="card-footer text-muted">
+                {{tags}} <br/>
+
+                {% if equipment %}          
+                    You will need : {{ equipment }}
+                {% else %}
+                    No equipment is needed
+                {% endif %}
+              </div>
+
+
+		</div>
+
+	</div>
+</div>
 
 {% endblock %}
