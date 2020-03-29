@@ -16,7 +16,7 @@
           </tr>
         {% for workout in workouts %}
         <tr>
-            <th><a href='workitout/workout/{{ workout.id }}'>{{workout.title}}</a></th>
+            <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
             <th>{{workout.duration}}</th>
             <th>{{workout.numLikes}}</th>
         </tr>

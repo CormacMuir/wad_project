@@ -150,7 +150,7 @@ def exercise_page(request, exercise_title_slug):
 
 
 
-def workout_page(request, workout_id):
+def workout_page(request, workout_id,creator):
     context_dict = {}
     try:
         workout = Workout.objects.get(id=workout_id)
