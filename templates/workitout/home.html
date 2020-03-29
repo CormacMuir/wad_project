@@ -20,7 +20,7 @@
 
         {% for workout in workouts %}
         
-        <a href="/workitout/workout/{{ workout.id }}/">
+        <a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">
             <div class="card m-2">
                 <img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
                 
@@ -36,12 +36,12 @@
 
                 <p class="card-text">{{workout.description}}</p>
                 </div>
-                
+            </a>
                 <div class="card-footer text-muted">
                 Posted on {{workout.date_published}} by {{workout.creator}}
                 </div>
             </div>
-        </a>
+        
 
         {% endfor %}
 

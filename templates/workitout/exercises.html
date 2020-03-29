@@ -21,7 +21,12 @@
                 <img class="card-img" src="{% static image_path %}"  alt="exercise image"/>
             {% endfor %}
             -->
- 
+            <tr>
+                <td><a href="/workitout/exercise/{{ exercise.slug }}/">{{exercise.title}}</a></td>
+                <td><img src="{% static exercise.image1 %}" height=40 alt="exercise image"/></td>
+                <td><img src="{% static exercise.image2 %}" height=40 alt="exercise image"/></td>
+            </tr>
+            
             <div class="card-body">
                 <h5 class="card-title">{{exercise.title}}</h5>
                 <p class="card-text">{{exercise.muscle_group}}</p>

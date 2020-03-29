@@ -59,7 +59,7 @@ def about(request):
 
     return render(request, 'workitout/about.html')
     
-
+    
 def exercises(request):
 
     exercise_list = Exercise.objects.order_by('muscle_group')
@@ -117,7 +117,21 @@ def register_profile(request):
     context_dict = {'form': form}
     return render(request, 'workitout/profile_registration.html', context_dict)
 
+def exercises(request):
 
+    exercise_list = Exercise.objects.order_by('title')
+
+    
+    for ex in exercise_list:
+        
+        ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
+        ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+
+    context_dict={}
+
+    context_dict['exercises'] = exercise_list
+    
+    return render(request, 'workitout/exercises.html', context_dict)
 
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
@@ -152,7 +166,7 @@ def exercise_page(request, exercise_title_slug):
 
 
 
-def workout_page(request, workout_id):
+def workout_page(request, workout_id,creator):
     context_dict = {}
     try:
         workout = Workout.objects.get(id=workout_id)
