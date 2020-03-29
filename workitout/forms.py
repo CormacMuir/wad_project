@@ -18,9 +18,7 @@ class CreateWorkoutForm(forms.ModelForm):
 
     # hidden fields 
     duration        = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
-    difficulty      = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
     likes           = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
-    tags            = forms.CharField(widget=forms.HiddenInput(), required=False)
     slug            = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     class Meta:

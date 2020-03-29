@@ -67,7 +67,7 @@ class Workout(models.Model):
     # required 
     title = models.CharField(max_length=128, null=False, blank=False)
     description = models.TextField(max_length=5000, null=False, blank=False)
-
+    
     creator = models.ForeignKey(User, related_name='workout_creator', on_delete=models.CASCADE)
     
     duration = models.IntegerField(default=69)

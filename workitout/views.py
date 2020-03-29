@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-from workitout.models import Workout , Exercise, UserProfile
+from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
 from django.forms.models import model_to_dict
 from workitout.forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,7 @@ from workitout.forms import CreateWorkoutForm
 
 
 def home(request):
-    workout_list=Workout.objects.order_by('-difficulty')[:3]
+    workout_list=Workout.objects.order_by('-difficulty')
     for w in workout_list:
         w.numLikes = len(w.likes.all())
 
@@ -39,8 +39,9 @@ def create_workout(request):
     
         obj.creator = user
         obj.save()
+        obj_id = str(obj.id)
         form = CreateWorkoutForm()
-
+        return redirect('workout/' + obj_id)
     context['form'] = form
 
     return render(request, 'workitout/create-workout.html', context)
@@ -116,7 +117,7 @@ def register_profile(request):
 
 
 
-def show_exercise(request, exercise_title_slug):
+def exercise_page(request, exercise_title_slug):
     context_dict = {}
     try:
 
@@ -147,10 +148,26 @@ def show_exercise(request, exercise_title_slug):
 
     return render(request, 'workitout/exercise.html', context=context_dict)
 
-def workout_page(request, id):
+
+
+def workout_page(request, workout_id):
     context_dict = {}
     try:
-        workout = Workout.objects.get(id=id)
-        
-    except Exercise.DoesNotExist:
-        context_dict['exercise'] = None
+        workout = Workout.objects.get(id=workout_id)
+
+        context_dict['title'] = workout.title
+        context_dict['description'] = workout.description
+        context_dict['creator'] = workout.creator.username
+        context_dict['duration'] = workout.duration
+        context_dict['difficulty'] = workout.difficulty
+        context_dict['likes'] = len(workout.likes.all())
+        context_dict['tags'] = [t.name for t in workout.tags.all()]
+        context_dict['date_published'] = workout.date_published
+
+        exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        context_dict['exercises'] = exercises
+
+    except Workout.DoesNotExist:
+        context_dict['workout'] = None
+
+    return render(request, 'workitout/workout.html', context=context_dict)

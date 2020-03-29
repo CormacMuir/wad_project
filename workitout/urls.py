@@ -10,7 +10,9 @@ urlpatterns = [
     path('search',views.search,name='search'),
     path('about',views.about,name='about'),
     path('exercises',views.exercises,name='exercises'),
-    path('exercise/<slug:exercise_title_slug>/',views.show_exercise, name='show_exercise'),
+    path('exercise/<slug:exercise_title_slug>/',views.exercise_page, name='exercise_page'),
+    path('workout/<workout_id>/',views.workout_page, name='workout_page'),
+
     path('user/<slug:user_name>/',views.user_page,name='user-page'),
     path('register_profile/', views.register_profile, name='register_profile'),
     path('must_authenticate', views.must_authenticate, name='must_authenticate'),

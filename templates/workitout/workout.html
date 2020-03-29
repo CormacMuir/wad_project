@@ -1,1 +1,23 @@
 {% extends 'workitout/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    {{ title }}
+{% endblock %}
+
+{% block body_block %}
+<div>
+        <h2>{{ title }}</h2>
+        <div>{{ description }}</div>
+        <div>{{ tags }}</div>
+        <div></div>
+        <div>Difficulty: {{ difficulty }}</div>
+        <div>Duration: {{ duration }}</div>
+        <div></div>
+        <div>Creator: {{ creator }}</div>
+        <div>Date Created: {{ date }}</div>
+        <div>Likes: {{ likes }}</div>
+        
+</div>
+
+
+{% endblock %}

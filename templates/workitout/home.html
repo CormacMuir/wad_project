@@ -16,7 +16,7 @@
           </tr>
         {% for workout in workouts %}
         <tr>
-            <th>{{workout.title}}</th>
+            <th><a href='workitout/workout/{{ workout.id }}'>{{workout.title}}</a></th>
             <th>{{workout.duration}}</th>
             <th>{{workout.numLikes}}</th>
         </tr>
