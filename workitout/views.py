@@ -5,6 +5,9 @@ from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
 from django.forms.models import model_to_dict
 from workitout.forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.http import HttpResponse
+from django.views import View
 
 from workitout.forms import CreateWorkoutForm
 
@@ -58,7 +61,8 @@ def search(request):
 def about(request):
 
     return render(request, 'workitout/about.html')
-    
+
+   
 
 
 def user_page(request, user_name):
@@ -78,6 +82,13 @@ def user_page(request, user_name):
             created.append(w)
 
 
+        context_dict['isFollower'] = "false"
+        for u in user1.followers.all():
+            if u== request.user:
+                context_dict['isFollower'] = "true"
+                break
+            
+
         context_dict['user'] = user1
         context_dict['username'] = user_obj.username
         context_dict['picture'] = user1.picture
@@ -88,6 +99,7 @@ def user_page(request, user_name):
         context_dict['private'] = user1.isPrivate
         context_dict['saved'] = saved
         context_dict['created'] = created
+        context_dict['current_user'] = request.user
     except User.DoesNotExist:
         context_dict['user'] = None
 
@@ -126,6 +138,60 @@ def exercises(request):
     context_dict['exercises'] = exercise_list
     
     return render(request, 'workitout/exercises.html', context_dict)
+class LikeWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        workout_id = request.GET['workout_id']
+        user_id = request.GET['user_id']
+        toLike = request.GET['like']
+        try:
+            workout = Workout.objects.get(id=workout_id)
+        except Workout.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        
+        if toLike=="true":
+            workout.likes.add(User.objects.get(id=user_id))        
+            workout.save()
+            return HttpResponse(len(workout.likes.all()))
+        else:
+            workout.likes.remove(User.objects.get(id=user_id))        
+            workout.save()
+            return HttpResponse(len(workout.likes.all()))
+
+class FollowUserView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        
+        follower_id= request.GET['follower_id']
+        user_id = request.GET['user_id']
+        to_follow = request.GET['to_follow']
+
+        try:
+            follower_user = User.objects.get(id=follower_id)
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        follower_profile = UserProfile.objects.get(user = follower_user)
+        user_profile = UserProfile.objects.get(user = user)
+        
+        if to_follow =="true":
+            user_profile.followers.add(follower_user)
+            user_profile.save()
+            follower_profile.folowing.add(user)
+            follower_profile.save()
+            return HttpResponse(len(user_profile.followers.all()))
+        else:
+            user_profile.followers.remove(follower_user)
+            user_profile.save()
+            follower_profile.folowing.remove(user)
+            follower_profile.save()
+            return HttpResponse(len(user_profile.followers.all()))
 
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
@@ -164,15 +230,17 @@ def workout_page(request, workout_id,creator):
     context_dict = {}
     try:
         workout = Workout.objects.get(id=workout_id)
-
-        context_dict['title'] = workout.title
-        context_dict['description'] = workout.description
+        
+        
+        if request.user in workout.likes.all():
+            context_dict['has_liked'] = True
+        else:
+            context_dict['has_liked'] = False
+        context_dict['user'] = request.user
+        context_dict['workout'] = workout
         context_dict['creator'] = workout.creator.username
-        context_dict['duration'] = workout.duration
-        context_dict['difficulty'] = workout.difficulty
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
-        context_dict['date_published'] = workout.date_published
 
         exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
         context_dict['exercises'] = exercises

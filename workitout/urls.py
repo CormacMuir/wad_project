@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import path
 from workitout import views
-
+from workitout.views import LikeWorkoutView,FollowUserView
 app_name = 'workitout'
 
 urlpatterns = [
@@ -12,7 +12,8 @@ urlpatterns = [
     path('exercises',views.exercises,name='exercises'),
     path('exercise/<slug:exercise_title_slug>/',views.exercise_page, name='exercise_page'),
     path('workout/<creator>/<workout_id>/',views.workout_page, name='workout_page'),
-
+    path('like_workout/', views.LikeWorkoutView.as_view(), name='like_workout'),
+    path('follow_user/', views.FollowUserView.as_view(), name='follow_user'),
     path('user/<slug:user_name>/',views.user_page,name='user-page'),
     path('register_profile/', views.register_profile, name='register_profile'),
     path('must_authenticate', views.must_authenticate, name='must_authenticate'),

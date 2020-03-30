@@ -1,22 +1,39 @@
 {% extends 'workitout/base.html' %}
 {% load staticfiles %}
 {% block title_block %}
-    {{ title }}
+{{ title }}
 {% endblock %}
 
 {% block body_block %}
 <div>
-        <h2>{{ title }}</h2>
-        <div>{{ description }}</div>
-        <div>{{ tags }}</div>
-        <div></div>
-        <div>Difficulty: {{ difficulty }}</div>
-        <div>Duration: {{ duration }}</div>
-        <div></div>
-        <div>Creator: {{ creator }}</div>
-        <div>Date Created: {{ date }}</div>
-        <div>Likes: {{ likes }}</div>
-        
+    <h2 id="like_start" data-liked={{has_liked}}>{{ title }}</h2>
+    {{ workout.description }}
+    {{ tags }}
+    Difficulty: {{ workout.difficulty }}
+    Duration: {{ workout.duration }}
+    Creator: {{ creator }}
+    Date Created: {{ workout.date_published }}
+    Likes: {{ likes }}
+
+
+    <div>
+        <strong id="like_count">{{ likes}}</strong> likes
+        {% if user.is_authenticated %}
+            
+                <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="thumbs-up"></span>
+                    Like Workout
+                </button>
+            
+                <button id="unlike_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="thumbs-down"></span>
+                    Unlike Workout
+                </button>
+
+        {% endif %}
+    </div>
+
+
 </div>
 
 

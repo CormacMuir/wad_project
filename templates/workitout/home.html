@@ -11,12 +11,14 @@
     <table style="width:80%" id="frontTab">
         <tr>
             <th>Workout Name</th>
+            <th>creator</th>
             <th>Duration</th>
             <th>Likes</th>
           </tr>
         {% for workout in workouts %}
         <tr>
             <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
+            <td><a href="{% url 'workitout:user-page' workout.creator.username  %}">{{workout.creator.username}}</a></td>
             <td>{{workout.duration}}</td>
             <td>{{workout.numLikes}}</td>
         </tr>
