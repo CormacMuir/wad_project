@@ -9,8 +9,14 @@ from django.contrib.auth.decorators import login_required
 from workitout.forms import CreateWorkoutForm
 
 
+
+# marty add
+from django.db.models import Q
+
 def home(request):
+
     workout_list=Workout.objects.order_by('-difficulty')
+
     for w in workout_list:
         w.numLikes = len(w.likes.all())
 
@@ -62,8 +68,23 @@ def about(request):
     
 def exercises(request):
 
-    exercise_list = Exercise.objects.order_by('muscle_group')
     context_dict={}
+
+    # marty added code here
+    query = ""
+    if request.GET:
+        query = request.GET['q']
+        context_dict['query'] = str(query)
+
+    # cormac knowledge
+    exercise_list = get_exercise_queryset(query)
+
+    for ex in exercise_list:
+        
+        ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
+        ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+    
+    
     context_dict['exercises'] = exercise_list
 
     #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
@@ -116,22 +137,6 @@ def register_profile(request):
             print(form.errors)
     context_dict = {'form': form}
     return render(request, 'workitout/profile_registration.html', context_dict)
-
-def exercises(request):
-
-    exercise_list = Exercise.objects.order_by('title')
-
-    
-    for ex in exercise_list:
-        
-        ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
-        ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
-
-    context_dict={}
-
-    context_dict['exercises'] = exercise_list
-    
-    return render(request, 'workitout/exercises.html', context_dict)
 
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
@@ -187,3 +192,20 @@ def workout_page(request, workout_id,creator):
         context_dict['workout'] = None
 
     return render(request, 'workitout/workout.html', context=context_dict)
+
+def get_exercise_queryset(query=None):
+
+    queryset = []
+
+    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
+
+    for q in queries:
+        posts = Exercise.objects.filter( 
+            Q(title__icontains=q) | 
+            Q(difficulty__icontains=q) 
+            ).distinct()
+        for post in posts:
+            queryset.append(post)
+
+    # create unique set and then convert to list
+    return list(set(queryset)) 
