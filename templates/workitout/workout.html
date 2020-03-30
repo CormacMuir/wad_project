@@ -6,7 +6,7 @@
 
 {% block body_block %}
 <div>
-    <h2 id="like_start" data-liked={{has_liked}}>{{ title }}</h2>
+    <h2 id="like_start" data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ title }}</h2>
     {{ workout.description }}
     {{ tags }}
     Difficulty: {{ workout.difficulty }}
@@ -14,6 +14,11 @@
     Creator: {{ creator }}
     Date Created: {{ workout.date_published }}
     Likes: {{ likes }}
+    {%for e in exercises %}
+    {%for el in e %}
+    {{el}}
+    {%endfor%}
+    {%endfor%}
 
 
     <div>
@@ -33,7 +38,37 @@
         {% endif %}
     </div>
 
+    <div>
+        {% if user.is_authenticated %}
+        <div id="success_save" class="alert alert-success" role="alert">
+          </div>
+            
+                <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="save"></span>
+                    Save Workout
+                </button>
+                <button id="unsave_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="x-square"></span>
+                    Unsave Workout
+                </button>
+            
 
+        {% endif %}
+    </div>
+
+    <table style="width:80%" id="workoutTable">
+        <tr>
+            <th>Exercise</th>
+            <th>Sets</th>
+            <th>Reps</th>
+          </tr>
+        {% for exercise in exercises %}
+        <tr>
+            {%for entry in exercise %}
+            <td>{{entry}}</td>
+            {%endfor%}
+        </tr>
+        {%endfor%}
 </div>
 
 

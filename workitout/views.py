@@ -193,6 +193,36 @@ class FollowUserView(View):
             follower_profile.save()
             return HttpResponse(len(user_profile.followers.all()))
 
+class SaveWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        
+        workout_id = request.GET['workout_id']
+        user_id = request.GET['user_id']
+        to_save = request.GET['to_save']
+
+        try:
+            user = User.objects.get(id=user_id)
+            workout = Workout.objects.get(id=workout_id)
+        except Workout.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+        except User.DoesNotExist:
+            return HttpResponse(-1)
+
+        user_profile = UserProfile.objects.get(user = user)
+        
+        if to_save =="true":
+            user_profile.saved.add(workout)
+            user_profile.save()
+            
+            return HttpResponse(str(workout.title))
+        else:
+            user_profile.saved.remove(workout)
+            user_profile.save()
+            return HttpResponse(str(workout.title))
+
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
     try:
@@ -230,12 +260,17 @@ def workout_page(request, workout_id,creator):
     context_dict = {}
     try:
         workout = Workout.objects.get(id=workout_id)
+        if request.user.is_authenticated:
+            currentProfile = UserProfile.objects.get(user=request.user)
+            if workout in currentProfile.saved.all():
+                context_dict['is_saved'] = True
+            else:
+                context_dict['is_saved'] = False
+            if request.user in workout.likes.all():
+                context_dict['has_liked'] = True
+            else:
+                context_dict['has_liked'] = False
         
-        
-        if request.user in workout.likes.all():
-            context_dict['has_liked'] = True
-        else:
-            context_dict['has_liked'] = False
         context_dict['user'] = request.user
         context_dict['workout'] = workout
         context_dict['creator'] = workout.creator.username
@@ -245,6 +280,7 @@ def workout_page(request, workout_id,creator):
         exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
         context_dict['exercises'] = exercises
 
+        print(context_dict['exercises'][0])
     except Workout.DoesNotExist:
         context_dict['workout'] = None
 
