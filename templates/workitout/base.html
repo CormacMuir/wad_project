@@ -30,7 +30,11 @@
             </nav>
 
             {% if user.is_authenticated %}
-                <a class="btn btn-outline-primary" href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Log Out</a>
+            {% if not randvar %}
+            
+            <a class="btn btn-outline-primary" href="{% url 'workitout:user_page' username %}">My Profile</a>    
+            <a class="btn btn-outline-primary" href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Log Out</a>
+            {% endif %}
             {% else %}
             <table>
                 <tr>
@@ -38,9 +42,10 @@
                     <th><a class="btn btn-outline-primary" href="{% url 'registration_register' %}">Register</a></th>
                 </tr>
             </table>
+            
             {% endif %}
           </div>
-
+        
 
         <!--
         <img src="{% static 'images/wad-logo-blue.jpg' %}" alt="WorkItOut"height="50"width="100" />

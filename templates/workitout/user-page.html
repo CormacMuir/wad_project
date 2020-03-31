@@ -6,7 +6,13 @@
 
 {% block body_block %}
 {% if userProfile %}
-<h1 id="follow_start" data-isFollowing={{isFollower}} >{{username}}</h1>
+<h1 id="follow_start" data-isFollowing={{isFollower}} >{{profile_username}}</h1>
+{% if self_view is True %}
+<button id="edit_btn" class="btn btn-primary btn-sm" type="button">
+    <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit</a>
+    
+</button>
+{%endif%}
 {%if picture %}
 <img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
 {% endif %}

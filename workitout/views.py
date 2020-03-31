@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
 from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
 from django.forms.models import model_to_dict
-from workitout.forms import UserProfileForm
+from workitout.forms import UserProfileForm,EditProfileForm,EditUserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
@@ -19,7 +20,7 @@ def home(request):
 
     context_dict={}
     context_dict['workouts'] = workout_list
-    
+    context_dict['username'] = request.user.username
     return render(request, 'workitout/home.html', context_dict)
 
 
@@ -32,6 +33,7 @@ def create_workout(request):
     if not user.is_authenticated:
         return redirect(reverse('workitout:must_authenticate'))
 
+    context['username'] = request.user.username
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
@@ -55,19 +57,41 @@ def must_authenticate(request):
 
 
 def search(request):
-
-    return render(request, 'workitout/search.html')
+    context_dict = {}
+    context_dict['username'] = request.user.username
+    return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
+    context_dict = {}
+    context_dict['username'] = request.user.username
+    return render(request, 'workitout/about.html',context_dict)
 
-    return render(request, 'workitout/about.html')
+@login_required   
+def edit_profile(request):
+    
+    if request.method=='POST':
 
-   
+        form=EditProfileForm(request.POST,instance=request.user)
+        profile_form=EditUserProfileForm(request.POST,request.FILES,instance=request.user.userprofile)
 
+        if form.is_valid() and profile_form.is_valid():
+            user_form = form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user_form
+            profile.save()
+            return redirect(reverse('workitout:user_page',args=[request.user.username]))
+        
+    else:
+        form = EditProfileForm(instance=request.user)
+        profile_form = EditUserProfileForm(instance=request.user.userprofile)
+        
+        context_dict={'form':form,'profile_form':profile_form}
+        context_dict['username'] = request.user.username
+        return render(request,'workitout/edit-profile.html',context=context_dict)
 
 def user_page(request, user_name):
     context_dict = {}
-   
+    context_dict['username'] = request.user.username
     try:
         saved = []
         created = []
@@ -98,7 +122,7 @@ def user_page(request, user_name):
 
 
         context_dict['userProfile'] = user1
-        context_dict['username'] = user_obj.username
+        context_dict['profile_username'] = user_obj.username
         try:
             context_dict['picture'] = user1.picture
         except user1.picture.DoesNotExist:
@@ -119,6 +143,7 @@ def user_page(request, user_name):
 
 @login_required
 def register_profile(request):
+    
     form = UserProfileForm()
 
     if request.method == 'POST':
@@ -131,7 +156,9 @@ def register_profile(request):
         else:
             print(form.errors)
     context_dict = {'form': form}
+    context_dict['randvar'] = True
     return render(request, 'workitout/profile_registration.html', context_dict)
+
 
 def exercises(request):
 
@@ -148,6 +175,7 @@ def exercises(request):
     context_dict={}
 
     context_dict['exercises'] = exercise_list
+    context_dict['username'] = request.user.username
     
     return render(request, 'workitout/exercises.html', context_dict)
 class LikeWorkoutView(View):
@@ -240,6 +268,7 @@ class SaveWorkoutView(View):
 
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
+    context_dict['username'] = request.user.username
     try:
 
         exercise = Exercise.objects.get(slug=exercise_title_slug)
@@ -273,6 +302,7 @@ def exercise_page(request, exercise_title_slug):
 
 def workout_page(request, workout_id,creator):
     context_dict = {}
+    context_dict['username'] = request.user.username
     try:
         workout = Workout.objects.get(id=workout_id)
         if request.user.is_authenticated:

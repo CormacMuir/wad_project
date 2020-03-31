@@ -1,0 +1,17 @@
+{% extends 'workitout/base.html' %}
+
+{% block title_block %}
+    Edit Profile
+{% endblock %}
+
+{% block body_block %}
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {%csrf_token%}
+        {{form.as_p}}
+        {{profile_form.as_p}}
+        <button type="submit">Submit</button> 
+    </form>
+</div>
+
+{% endblock %}
