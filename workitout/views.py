@@ -12,15 +12,21 @@ from workitout.forms import CreateWorkoutForm
 
 # marty add
 from django.db.models import Q
+from operator import attrgetter
 
 def home(request):
 
-    workout_list=Workout.objects.order_by('-difficulty')
-
-    for w in workout_list:
-        w.numLikes = len(w.likes.all())
-
     context_dict={}
+
+    # marty added code here
+    query = ""
+    if request.GET:
+        query = request.GET['q']
+        context_dict['query'] = str(query)
+
+    # queries and returns the newest first
+    workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
+
     context_dict['workouts'] = workout_list
     
     return render(request, 'workitout/home.html', context_dict)
@@ -209,3 +215,21 @@ def get_exercise_queryset(query=None):
 
     # create unique set and then convert to list
     return list(set(queryset)) 
+
+def get_workout_queryset(query=None):
+
+    queryset = []
+
+    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
+
+    for q in queries:
+        posts = Workout.objects.filter( 
+            Q(title__icontains=q) | 
+            Q(description__icontains=q) 
+            ).distinct()
+        for post in posts:
+            queryset.append(post)
+
+    # create unique set and then convert to list
+    return list(set(queryset)) 
+

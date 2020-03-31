@@ -8,44 +8,166 @@
 
 <style type="text/css">
     .card{
-        max-width: 700px;
+        min-width: 250px;
     }
     .container{
         padding:20px;
+        /*width: 90%;*/
     }
+    .search-bar{
+        color: rgb(82, 160, 196);
+    }
+    .card-body{
+        padding: 20px;
+        width: 90%;
+    }
+
+    
+	@media (max-width: 768px) { 
+		.right-column{
+			margin-left: 0px;
+		}
+	}
+
+	@media (min-width: 768px) { 
+		.right-column{
+			margin-left: 20px;
+		}
+	}
+    
+
+	.workout-post-container{
+		margin-bottom: 20px;
+		width: 100%;
+	}
+	.create-post-bar{
+		background-color: #fff;
+		margin-bottom:20px;
+	}
+
+	.left-column{
+		padding:0px;
+	}
+
+	.right-column{
+		padding:0px;
+	}
+	.lead{
+		font-size: 17px;
+	}
 </style>
 
-<div class="container">
-	<div class="row">
 
-        {% for workout in workouts %}
-        
-        <a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">
-            <div class="card m-2">
-                <img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
+<div class="container-fluid rounded">
+    
+    <div class="row">
+
+        <!--Feed starts-->
+        <div class="m-2 col rounded bg-white border border-info">
+
+        </br>
+
+            <!--<div class="mb-3 rounded border border-info">-->
+
+                <!--Search funcitonality-->
+				<div class="card m-auto d-flex flex-column p-3 border border-info">
+					<!--<img class="img-fluid d-block m-auto pb-2" src="{% static 'images/wad-logo-blue.jpg' %}" width="72" height="72">-->
+
+    
+                    <form method="get">
+                        <p class="lead"><h5>Search a workout created by one of our users or <a href="{% url 'workitout:create-workout' %}" >create your own!</a></h5></p>
+                        <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
+                    </form>
+				</div>
+			<!---</div>-->
+
+            </br>
+
+            {% if workouts %}
+
+                    {% for wo in workouts %}
+                        <a href="{% url 'workitout:workout_page' wo.creator wo.id  %}">
+
+                            <div class="card m-auto d-flex flex-column p-3 bg-info">
+                                {% include 'workitout/snippets/workout_snippet.html' with workout=wo %}
+                            </div>
+                                
+                        </a>      
+                    </br> 
+                    {% endfor %}
+
+            {% else %}
+            
+                <div class="workout-post-container">
+                    {% include 'workitout/snippets/exercise_snippet.html' with query=query %}
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Extra functinoality here, perhaps javascript?-->
+        <div class="m-2 col-sm  rounded bg-info border border-white">
+
+        </br>
+
+            <div class="mb-3 rounded">
                 
-                <div class="card-body mt-2 mb-2">
-                <h2 class="card-title">{{workout.title}}</h2>
-
-                <!-- Not working?
-                <h6 class="card-subtitle mb-2 text-muted">
-                    {{workout.likes}} users like this workout.
-                 </h6>
-                 -->
+                <!--Add code here-->
+                
 
 
-                <p class="card-text">{{workout.description}}</p>
-                </div>
-            </a>
-                <div class="card-footer text-muted">
-                Posted on {{workout.date_published}} by {{workout.creator}}
-                </div>
-            </div>
+			</div>
+
+        </div>
+
+        <!-- Extra functinoality here, maybe some links to a social media feed/forum?-->
+        <div class="m-2 col-sm  rounded bg-dark border border-white">
+
+        </br>
+
+            <div class="mb-3 rounded">
+                
+                <!--Add code here-->
+
+
+			</div>
+
+        </div>
         
 
-        {% endfor %}
+        <!-- Add interactive js map here-->
+        <div class="m-2 col-sm  rounded bg-white border border-dark">
+
+        </br>
+
+            <div class="mb-3 rounded">
+                
+                <!--Add code here-->
+
+			</div>
+
+        </div>
 
 
-	</div>
+    </div>
+
 </div>
+
+
+
+<script type="text/javascript">
+    document.getElementById("id_q").value = "{{query}}"
+</script>
+
+
 {% endblock %}
+
+<!--
+
+
+col-lg-7 offset-lg-1
+
+workout-post-container m-auto d-flex flex-column p-3
+-->

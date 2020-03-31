@@ -20,7 +20,7 @@
 <div class="card m-5 mx-auto">
     <div class="search-bar m-3">
         <form method="get">
-            <p>Specifiy an Exercise, Muscle Group, or Difficulty here </p>
+            <p><h4>Specifiy an Exercise, Muscle Group, or Difficulty here </h4></p>
             <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
         </form>
     </div>
@@ -54,48 +54,6 @@
 {% endif %}
 
 
-
-<!--
-{% if exercises %}
-
-    <div class="card-columns m-5">
-
-        {% for exercise in exercises %}
-
-            <a href="/workitout/exercise/{{ exercise.slug }}/">
-
-                <div class="card">
-
-                <img class="card-img-top" src="{% static exercise.image1 %}" alt="Card image cap">
-
-                    <div class="card-body">
-                        <h5 class="card-title">{{exercise.title}}</h5>
-                        <p class="card-text">{{exercise.muscle_group}}</p>
-                        <p class="card-text">{{exercise.description.primer}}</p>
-                    </div>
-        
-                </div>
-
-            </a>
-
-        {% endfor %}
-
-    </div>
-
-{% else %}
-
-    <div class="container">
-        <div class="row">
-            <div class="card m-auto">
-                <div class="card-body mt-2 mb-2">
-                    <h2 class="card-title">No Results</h2>
-                    <p class="card-text">No results matching your search: "{{query}}"...</p>
-            </div>
-        </div>
-    </div>
-
-{% endif %}
--->
 
 <!--Java script to help with the search function-->
 
