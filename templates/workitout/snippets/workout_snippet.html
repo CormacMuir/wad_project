@@ -1,0 +1,44 @@
+{% load staticfiles%}
+
+<style type="text/css">
+
+    .card{
+        max-width: 700px;
+    }
+    .card-body{
+        padding: 20px;
+        width:100%;
+    }
+
+</style>
+
+{% if workout %}
+
+    <div class="card m-2">
+
+        <img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
+        
+        <div class="card-body mt-2 mb-2">
+        <h2 class="card-title">{{workout.title}}</h2>
+
+        <p class="card-text">{{workout.description}}</p>
+        </div>
+
+        <div class="card-footer text-muted">
+        Posted on {{workout.date_published}} by {{workout.creator}}
+        </div>
+    </div>
+
+{% else %}
+
+    <div class="container">
+        <div class="row">
+            <div class="card m-auto">
+                <div class="card-body mt-2 mb-2">
+                    <h2 class="card-title">No Results</h2>
+                    <p class="card-text">No results matching your search: "{{query}}"...</p>
+            </div>
+        </div>
+    </div>
+
+{% endif %}

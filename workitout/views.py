@@ -11,14 +11,22 @@ from django.http import HttpResponse
 from django.views import View
 
 from workitout.forms import CreateWorkoutForm
-
+from django.db.models import Q
+from operator import attrgetter
 
 def home(request):
-    workout_list=Workout.objects.order_by('-difficulty')
-    for w in workout_list:
-        w.numLikes = len(w.likes.all())
 
     context_dict={}
+
+    # marty added code here
+    query = ""
+    if request.GET:
+        query = request.GET['q']
+        context_dict['query'] = str(query)
+
+    # queries and returns the newest first
+    workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
+
     context_dict['workouts'] = workout_list
     context_dict['username'] = request.user.username
     return render(request, 'workitout/home.html', context_dict)
@@ -57,13 +65,17 @@ def must_authenticate(request):
 
 
 def search(request):
+    #dont remove the 2 lines below
     context_dict = {}
     context_dict['username'] = request.user.username
+
     return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
+    #dont remove the 2 lines below
     context_dict = {}
     context_dict['username'] = request.user.username
+
     return render(request, 'workitout/about.html',context_dict)
 
 @login_required   
@@ -162,21 +174,26 @@ def register_profile(request):
 
 def exercises(request):
 
-    exercise_list = Exercise.objects.order_by('title')
+    context_dict={}
 
-    
+    # marty added code here
+    query = ""
+    if request.GET:
+        query = request.GET['q']
+        context_dict['query'] = str(query)
+
+    # cormac knowledge
+    exercise_list = get_exercise_queryset(query)
+
     for ex in exercise_list:
         
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
         ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
-
-
     
-    context_dict={}
-
-    context_dict['exercises'] = exercise_list
     context_dict['username'] = request.user.username
-    
+    context_dict['exercises'] = exercise_list
+
+    #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
 class LikeWorkoutView(View):
     @method_decorator(login_required)
@@ -333,3 +350,38 @@ def workout_page(request, workout_id,creator):
         context_dict['workout'] = None
 
     return render(request, 'workitout/workout.html', context=context_dict)
+
+
+def get_exercise_queryset(query=None):
+
+    queryset = []
+
+    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
+
+    for q in queries:
+        posts = Exercise.objects.filter( 
+            Q(title__icontains=q) | 
+            Q(difficulty__icontains=q) 
+            ).distinct()
+        for post in posts:
+            queryset.append(post)
+
+    # create unique set and then convert to list
+    return list(set(queryset)) 
+
+def get_workout_queryset(query=None):
+
+    queryset = []
+
+    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
+
+    for q in queries:
+        posts = Workout.objects.filter( 
+            Q(title__icontains=q) | 
+            Q(description__icontains=q) 
+            ).distinct()
+        for post in posts:
+            queryset.append(post)
+
+    # create unique set and then convert to list
+    return list(set(queryset)) 

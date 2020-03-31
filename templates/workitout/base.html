@@ -47,29 +47,6 @@
           </div>
         
 
-        <!--
-        <img src="{% static 'images/wad-logo-blue.jpg' %}" alt="WorkItOut"height="50"width="100" />
-        <div>
-            <ul>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Logout</a></li>
-                {% else %}
-                <li><a href="{% url 'auth_login' %}">Login</a></li>
-                <li><a href="{% url 'registration_register' %}">Register</a></li>
-                {% endif %}
-                <li><a href="{% url 'workitout:home' %}">Home</a></li>
-				<li><a href="{% url 'workitout:about' %}">About</a></li>
-                <li><a href="{% url 'workitout:search' %}">Search</a></li>
-                <li><a href="{% url 'workitout:create-workout' %}">Create Workout</a></li>
-                <li><a href="{% url 'workitout:exercises' %}">All Exercises</a></li>
-                
-                
-            </ul>
-        </div>
-        <div>
-        -->
-
-        <!-- Marty - Bootstrap link - do not remove-->
         <link rel="stylesheet" 
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" 

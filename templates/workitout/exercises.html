@@ -5,22 +5,62 @@
 {% endblock %}
 
 {% block body_block %}
-<div>
 
-    <table style="width:80%" id="frontTab">
-        <tr>
-            <th>Exercise</th>
-            <th>Image</th>
-        </tr>
-        {% for exercise in exercises %}
-        <tr>
-            <td><a href="/workitout/exercise/{{ exercise.slug }}/">{{exercise.title}}</a></td>
-            <td><img src="{% static exercise.image1 %}" height=40 alt="exercise image"/></td>
-            <td><img src="{% static exercise.image2 %}" height=40 alt="exercise image"/></td>
-        </tr>
+
+<style>
+    .search-bar{
+        color: rgb(82, 160, 196);
+    }
+    .card-body{
+        padding: 20px;
+        width: 90%;
+    }
+</style>
+
+<div class="card m-5 mx-auto">
+    <div class="search-bar m-3">
+        <form method="get">
+            <p><h4>Specifiy an Exercise, Muscle Group, or Difficulty here </h4></p>
+            <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
+        </form>
+    </div>
+</div>
+
+
+{% if exercises %}
+
+    <div class="card-columns m-5">
         
+        {% for ex in exercises %}
+
+                <a href="/workitout/exercise/{{ ex.slug }}/">
+
+                    <!--Put snippet here-->
+                    {% include 'workitout/snippets/exercise_snippet.html' with exercise=ex %}
+
+                </a>
+
         {% endfor %}
 
-</div>
+    </div>
+
+{% else %}
+
+    <div>   
+        <!--Put snippet here-->
+        {% include 'workitout/snippets/exercise_snippet.html' with query=query %}
+    </div>
+
+{% endif %}
+
+
+
+<!--Java script to help with the search function-->
+
+<script type="text/javascript">
+
+    document.getElementById("id_q").value = "{{query}}"
+
+</script>
 
 {% endblock %}
