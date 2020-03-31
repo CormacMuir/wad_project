@@ -18,7 +18,7 @@
         {% for workout in workouts %}
         <tr>
             <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
-            <td><a href="{% url 'workitout:user-page' workout.creator.username  %}">{{workout.creator.username}}</a></td>
+            <td><a href="{% url 'workitout:user_page' workout.creator.username  %}">{{workout.creator.username}}</a></td>
             <td>{{workout.duration}}</td>
             <td>{{workout.numLikes}}</td>
         </tr>

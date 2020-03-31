@@ -67,14 +67,16 @@ def about(request):
 
 def user_page(request, user_name):
     context_dict = {}
+   
     try:
         saved = []
         created = []
         user_obj = User.objects.get(username=user_name)
         user1 = UserProfile.objects.get(user=user_obj)
 
+        
         for w in user1.saved.all():
-            w.numLikes = len(w.likes.all())
+            print("saved")
             saved.append(w)
         
         for w in Workout.objects.filter(creator=user_obj):
@@ -89,7 +91,7 @@ def user_page(request, user_name):
                 break
             
 
-        context_dict['user'] = user1
+        context_dict['userProfile'] = user1
         context_dict['username'] = user_obj.username
         context_dict['picture'] = user1.picture
         context_dict['bio'] = user1.bio
@@ -101,8 +103,8 @@ def user_page(request, user_name):
         context_dict['created'] = created
         context_dict['current_user'] = request.user
     except User.DoesNotExist:
-        context_dict['user'] = None
-
+        context_dict['userProfile'] = None
+    
     return render(request, 'workitout/user-page.html',context=context_dict)
 
 @login_required
@@ -183,13 +185,13 @@ class FollowUserView(View):
         if to_follow =="true":
             user_profile.followers.add(follower_user)
             user_profile.save()
-            follower_profile.folowing.add(user)
+            follower_profile.following.add(user)
             follower_profile.save()
             return HttpResponse(len(user_profile.followers.all()))
         else:
             user_profile.followers.remove(follower_user)
             user_profile.save()
-            follower_profile.folowing.remove(user)
+            follower_profile.following.remove(user)
             follower_profile.save()
             return HttpResponse(len(user_profile.followers.all()))
 
@@ -263,11 +265,14 @@ def workout_page(request, workout_id,creator):
         if request.user.is_authenticated:
             currentProfile = UserProfile.objects.get(user=request.user)
             if workout in currentProfile.saved.all():
+                print("in here")
                 context_dict['is_saved'] = True
             else:
                 context_dict['is_saved'] = False
+                
             if request.user in workout.likes.all():
                 context_dict['has_liked'] = True
+                print("here")
             else:
                 context_dict['has_liked'] = False
         

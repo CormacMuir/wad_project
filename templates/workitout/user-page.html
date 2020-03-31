@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block body_block %}
-{% if user %}
+{% if userProfile %}
 <h1 id="follow_start" data-isFollowing={{isFollower}} >{{username}}</h1>
-<img src="{{ user.picture.url }}" alt="profile picture" height="90 " width="90">
+<img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
 {% if private %}
     This profile is private.
 {% else %}
@@ -18,12 +18,12 @@
     <strong id="follow_count">{{ followers }}</strong> followers
     {% if user.is_authenticated %}
         
-            <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+            <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
                 <span data-feather="user-check"></span>
                 Follow
             </button>
         
-            <button id="unfollow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+            <button id="unfollow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
                 <span data-feather="user-x"></span>
                 Unfollow 
             </button>
@@ -48,7 +48,7 @@ This user is verified
               </tr>
             {% for workout in saved %}
             <tr>
-                <th>{{workout.title}}</th>
+                <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
                 <th>{{workout.duration}}</th>
                 <th>{{workout.numLikes}}</th>
             </tr>
@@ -71,7 +71,7 @@ This user is verified
                   </tr>
                 {% for workout in created %}
                 <tr>
-                    <th>{{workout.title}}</th>
+                    <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
                     <th>{{workout.duration}}</th>
                     <th>{{workout.numLikes}}</th>
                 </tr>

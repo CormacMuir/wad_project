@@ -85,10 +85,13 @@ $(document).ready(function() {
 
    var isSaved
     isSaved = $("#like_start").attr('data-isSaved');
-    if(isSaved="True"){
+    
+    if(isSaved=="True"){
+        console.log("Hello world!");
         $('#save_btn').hide();
         $('#unsave_btn').show();
     }else{
+        console.log("Hello world!");
         $('#unsave_btn').hide();
         $('#save_btn').show();
         
@@ -99,6 +102,7 @@ $(document).ready(function() {
         workoutIdVar = $(this).attr('data-workoutid');
         userIdVar = $(this).attr('data-userid');
         toSave = "true";
+        console.log("Hello world!");
         $.get('/workitout/save_workout',
             {'workout_id': workoutIdVar,'user_id':userIdVar,'to_save':toSave},
             function(data) {
