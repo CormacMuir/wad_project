@@ -5,16 +5,40 @@
 {% endblock %}
 
 {% block body_block %}
-{% if user %}
-<h1>{{username}}</h1>
-
-<img src="{{ user.picture.url }}" alt="profile picture" height="90 " width="90">
+{% if userProfile %}
+<h1 id="follow_start" data-isFollowing={{isFollower}} >{{profile_username}}</h1>
+{% if self_view is True %}
+<button id="edit_btn" class="btn btn-primary btn-sm" type="button">
+    <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit</a>
+    
+</button>
+{%endif%}
+{%if picture %}
+<img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
+{% endif %}
 {% if private %}
     This profile is private.
 {% else %}
 {{bio}}
-<div id="following">following: {{following}}</div>
-<div id="followers">followers: {{followers}}</div>
+
+<div>
+    <strong id="following_count">{{ following }}</strong> following
+    <strong id="follow_count">{{ followers }}</strong> followers
+    {% if user.is_authenticated %}
+    {% if self_view is False %}        
+            <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
+                <span data-feather="user-check"></span>
+                Follow
+            </button>
+        
+            <button id="unfollow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
+                <span data-feather="user-x"></span>
+                Unfollow 
+            </button>
+
+    {% endif %}
+    {% endif %}
+</div>
 
 {% if verified %}
 This user is verified
@@ -33,7 +57,7 @@ This user is verified
               </tr>
             {% for workout in saved %}
             <tr>
-                <th>{{workout.title}}</th>
+                <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
                 <th>{{workout.duration}}</th>
                 <th>{{workout.numLikes}}</th>
             </tr>
@@ -56,7 +80,7 @@ This user is verified
                   </tr>
                 {% for workout in created %}
                 <tr>
-                    <th>{{workout.title}}</th>
+                    <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
                     <th>{{workout.duration}}</th>
                     <th>{{workout.numLikes}}</th>
                 </tr>

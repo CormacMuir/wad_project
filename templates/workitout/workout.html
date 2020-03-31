@@ -26,11 +26,42 @@
 		<div class="card m-auto">
 			<img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
 			<div class="card-body mt-2 mb-2">
-              <h1 class="card-title">{{ title }}</h1>
+
+              <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ title }}</h1>
               <h6 class="card-subtitle mb-2 text-muted">
                   Difficulty : {{ difficulty }} <br/>
                   Duration : {{ duration }} <br/>
-                  {{likes}} users like this workout.
+                  <strong id="like_count">{{likes}}</strong> users like this workout.
+         {% if user.is_authenticated %}
+            
+                  <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                      <span data-feather="thumbs-up"></span>
+                      Like Workout
+                  </button>
+              
+                  <button id="unlike_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                      <span data-feather="thumbs-down"></span>
+                      Unlike Workout
+                  </button>
+  
+          {% endif %}
+      </div>
+  
+      <div>
+          {% if user.is_authenticated %}
+          <div id="success_save" class="alert alert-success" role="alert">
+            </div>
+              
+                  <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                      <span data-feather="save"></span>
+                      Save Workout
+                  </button>
+                  <button id="unsave_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                      <span data-feather="x-square"></span>
+                      Unsave Workout
+                  </button>
+              
+          {% endif %}
 
               </h6>
 
@@ -38,8 +69,8 @@
                   {{description}}
               </div>
 
-			  <p class = "blue" >{{ tags }} Place, 
-                  Holder, For, Tags, To, See, If, It, Would, Turn, Blue, As, There, Are, no, tags, yet</p>
+			  <p class = "blue" >{{ tags }} 
+
 			</div>
 			<div class="card-footer text-muted">
 			  Created on {{ date_published }} by {{creator}}

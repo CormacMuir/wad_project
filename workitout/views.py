@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
 from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
 from django.forms.models import model_to_dict
-from workitout.forms import UserProfileForm
+from workitout.forms import UserProfileForm,EditProfileForm,EditUserProfileForm
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.http import HttpResponse
+from django.views import View
 
 from workitout.forms import CreateWorkoutForm
-
+from django.db.models import Q
+from operator import attrgetter
 
 
 # marty add
@@ -28,7 +33,7 @@ def home(request):
     workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
 
     context_dict['workouts'] = workout_list
-    
+    context_dict['username'] = request.user.username
     return render(request, 'workitout/home.html', context_dict)
 
 
@@ -41,6 +46,7 @@ def create_workout(request):
     if not user.is_authenticated:
         return redirect(reverse('workitout:must_authenticate'))
 
+    context['username'] = request.user.username
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
@@ -64,14 +70,114 @@ def must_authenticate(request):
 
 
 def search(request):
+    #dont remove the 2 lines below
+    context_dict = {}
+    context_dict['username'] = request.user.username
 
-    return render(request, 'workitout/search.html')
+    return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
+    #dont remove the 2 lines below
+    context_dict = {}
+    context_dict['username'] = request.user.username
 
-    return render(request, 'workitout/about.html')
+    return render(request, 'workitout/about.html',context_dict)
+
+@login_required   
+def edit_profile(request):
+   
+    if request.method=='POST':
+
+        form=EditProfileForm(request.POST,instance=request.user)
+        profile_form=EditUserProfileForm(request.POST,request.FILES,instance=request.user.userprofile)
+
+        if form.is_valid() and profile_form.is_valid():
+            user_form = form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user_form
+            profile.save()
+            return redirect(reverse('workitout:user_page',args=[request.user.username]))
+        
+    else:
+        form = EditProfileForm(instance=request.user)
+        profile_form = EditUserProfileForm(instance=request.user.userprofile)
+        
+        context_dict={'form':form,'profile_form':profile_form}
+        context_dict['username'] = request.user.username
+        return render(request,'workitout/edit-profile.html',context=context_dict)
+
+
+def user_page(request, user_name):
+    context_dict = {}
+    context_dict['username'] = request.user.username
+    try:
+        saved = []
+        created = []
+        user_obj = User.objects.get(username=user_name)
+        user1 = UserProfile.objects.get(user=user_obj)
+
+        
+        for w in user1.saved.all():
+            w.numLikes = len(w.likes.all())
+            saved.append(w)
+        
+        for w in Workout.objects.filter(creator=user_obj):
+            w.numLikes = len(w.likes.all())
+            created.append(w)
+
+
+        context_dict['isFollower'] = "false"
+        for u in user1.followers.all():
+            if u== request.user:
+                context_dict['isFollower'] = "true"
+                break
+            
+        if request.user!=user_obj:
+            context_dict['self_view'] = False
+        else:
+            context_dict['self_view'] = True
+
+
+
+        context_dict['userProfile'] = user1
+        context_dict['profile_username'] = user_obj.username
+        try:
+            context_dict['picture'] = user1.picture
+        except user1.picture.DoesNotExist:
+            context_dict_dict['picture'] = None
+        context_dict['bio'] = user1.bio
+        context_dict['following'] = len(user1.following.all())
+        context_dict['followers'] = len(user1.followers.all())
+        context_dict['verified'] = user1.isVerified
+        context_dict['private'] = user1.isPrivate
+        context_dict['saved'] = saved
+        context_dict['created'] = created
+        context_dict['current_user'] = request.user
+        
+    except User.DoesNotExist:
+        context_dict['userProfile'] = None
     
+    return render(request, 'workitout/user-page.html',context=context_dict)
+
+@login_required
+def register_profile(request):
     
+    form = UserProfileForm()
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            user_profile = form.save(commit=False)
+            user_profile.user = request.user
+            user_profile.save()
+            return redirect(reverse('workitout:home'))
+        else:
+            print(form.errors)
+    context_dict = {'form': form}
+    context_dict['randvar'] = True
+    return render(request, 'workitout/profile_registration.html', context_dict)
+
+
 def exercises(request):
 
     context_dict={}
@@ -90,62 +196,102 @@ def exercises(request):
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
         ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
     
-    
+    context_dict['username'] = request.user.username
     context_dict['exercises'] = exercise_list
 
     #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
+class LikeWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        workout_id = request.GET['workout_id']
+        user_id = request.GET['user_id']
+        toLike = request.GET['like']
+        try:
+            workout = Workout.objects.get(id=workout_id)
+            
+        except Workout.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
 
-def user_page(request, user_name):
-    context_dict = {}
-    try:
-        saved = []
-        created = []
-        user_obj = User.objects.get(username=user_name)
-        user1 = UserProfile.objects.get(user=user_obj)
-
-        for w in user1.saved.all():
-            w.numLikes = len(w.likes.all())
-            saved.append(w)
         
-        for w in Workout.objects.filter(creator=user_obj):
-            w.numLikes = len(w.likes.all())
-            created.append(w)
-
-
-        context_dict['user'] = user1
-        context_dict['username'] = user_obj.username
-        context_dict['picture'] = user1.picture
-        context_dict['bio'] = user1.bio
-        context_dict['following'] = len(user1.following.all())
-        context_dict['followers'] = len(user1.followers.all())
-        context_dict['verified'] = user1.isVerified
-        context_dict['private'] = user1.isPrivate
-        context_dict['saved'] = saved
-        context_dict['created'] = created
-    except User.DoesNotExist:
-        context_dict['user'] = None
-
-    return render(request, 'workitout/user-page.html',context=context_dict)
-
-@login_required
-def register_profile(request):
-    form = UserProfileForm()
-
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            user_profile = form.save(commit=False)
-            user_profile.user = request.user
-            user_profile.save()
-            return redirect(reverse('workitout:home'))
+        if toLike=="true":
+            workout.likes.add(User.objects.get(id=user_id))        
+            workout.save()
+            return HttpResponse(len(workout.likes.all()))
         else:
-            print(form.errors)
-    context_dict = {'form': form}
-    return render(request, 'workitout/profile_registration.html', context_dict)
+            workout.likes.remove(User.objects.get(id=user_id))        
+            workout.save()
+            return HttpResponse(len(workout.likes.all()))
+
+class FollowUserView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        
+        follower_id= request.GET['follower_id']
+        user_id = request.GET['user_id']
+        to_follow = request.GET['to_follow']
+
+        try:
+            follower_user = User.objects.get(id=follower_id)
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        follower_profile = UserProfile.objects.get(user = follower_user)
+        user_profile = UserProfile.objects.get(user = user)
+        
+        if to_follow =="true":
+            user_profile.followers.add(follower_user)
+            user_profile.save()
+            follower_profile.following.add(user)
+            follower_profile.save()
+            return HttpResponse(len(user_profile.followers.all()))
+        else:
+            user_profile.followers.remove(follower_user)
+            user_profile.save()
+            follower_profile.following.remove(user)
+            follower_profile.save()
+            return HttpResponse(len(user_profile.followers.all()))
+
+class SaveWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        
+        workout_id = request.GET['workout_id']
+        user_id = request.GET['user_id']
+        to_save = request.GET['to_save']
+
+        try:
+            user = User.objects.get(id=user_id)
+            workout = Workout.objects.get(id=workout_id)
+        except Workout.DoesNotExist:
+            
+            return HttpResponse(-1)
+        except ValueError:
+            
+            return HttpResponse(-1)
+        except User.DoesNotExist:
+            
+            return HttpResponse(-1)
+        
+        user_profile = UserProfile.objects.get(user = user)
+        print("attempting to save "+workout.title+" to user: "+user_profile.user.username)
+        
+        if to_save =="true":
+        
+            user_profile.saved.add(workout)
+            return HttpResponse(str(workout.title))
+        else:
+            user_profile.saved.remove(workout)
+            return HttpResponse(str(workout.title))
 
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
+    context_dict['username'] = request.user.username
     try:
 
         exercise = Exercise.objects.get(slug=exercise_title_slug)
@@ -179,25 +325,38 @@ def exercise_page(request, exercise_title_slug):
 
 def workout_page(request, workout_id,creator):
     context_dict = {}
+    context_dict['username'] = request.user.username
     try:
         workout = Workout.objects.get(id=workout_id)
-
-        context_dict['title'] = workout.title
-        context_dict['description'] = workout.description
+        if request.user.is_authenticated:
+            currentProfile = UserProfile.objects.get(user=request.user)
+            if workout in currentProfile.saved.all():
+                print("in here")
+                context_dict['is_saved'] = True
+            else:
+                context_dict['is_saved'] = False
+                
+            if request.user in workout.likes.all():
+                context_dict['has_liked'] = True
+                
+            else:
+                context_dict['has_liked'] = False
+        
+        context_dict['user'] = request.user
+        context_dict['workout'] = workout
         context_dict['creator'] = workout.creator.username
-        context_dict['duration'] = workout.duration
-        context_dict['difficulty'] = workout.difficulty
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
-        context_dict['date_published'] = workout.date_published
 
         exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
         context_dict['exercises'] = exercises
 
+        
     except Workout.DoesNotExist:
         context_dict['workout'] = None
 
     return render(request, 'workitout/workout.html', context=context_dict)
+
 
 def get_exercise_queryset(query=None):
 
@@ -231,5 +390,7 @@ def get_workout_queryset(query=None):
             queryset.append(post)
 
     # create unique set and then convert to list
+
     return list(set(queryset)) 
+
 
