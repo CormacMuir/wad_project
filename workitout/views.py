@@ -14,6 +14,11 @@ from workitout.forms import CreateWorkoutForm
 from django.db.models import Q
 from operator import attrgetter
 
+
+# marty add
+from django.db.models import Q
+from operator import attrgetter
+
 def home(request):
 
     context_dict={}
@@ -80,7 +85,7 @@ def about(request):
 
 @login_required   
 def edit_profile(request):
-    
+   
     if request.method=='POST':
 
         form=EditProfileForm(request.POST,instance=request.user)
@@ -100,6 +105,7 @@ def edit_profile(request):
         context_dict={'form':form,'profile_form':profile_form}
         context_dict['username'] = request.user.username
         return render(request,'workitout/edit-profile.html',context=context_dict)
+
 
 def user_page(request, user_name):
     context_dict = {}
@@ -384,4 +390,7 @@ def get_workout_queryset(query=None):
             queryset.append(post)
 
     # create unique set and then convert to list
+
     return list(set(queryset)) 
+
+

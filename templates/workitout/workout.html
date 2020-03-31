@@ -26,6 +26,7 @@
 		<div class="card m-auto">
 			<img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
 			<div class="card-body mt-2 mb-2">
+
               <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ title }}</h1>
               <h6 class="card-subtitle mb-2 text-muted">
                   Difficulty : {{ difficulty }} <br/>
@@ -61,6 +62,7 @@
                   </button>
               
           {% endif %}
+
               </h6>
 
               <div class="card-body mt-2 mb-2">
@@ -68,6 +70,7 @@
               </div>
 
 			  <p class = "blue" >{{ tags }} 
+
 			</div>
 			<div class="card-footer text-muted">
 			  Created on {{ date_published }} by {{creator}}

@@ -3,10 +3,104 @@
         Register
     {% endblock %}
 {% block body_block %}
+
+<style>
+    .centre{
+        text-align: center;
+    }
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+
+</style>
+
+<div class="container col-lg-7 offset-lg-1">
+	<div class="row">
+		<div class="col-lg-7 offset-lg-1">
+            <form id="workout_form" method="post" action="/workitout/create-workout">{% csrf_token %}
+
+
+                {% for hidden in form.hidden_fields %} 
+                    {{ hidden }} 
+                {% endfor %} 
+
+
+                {% for field in form.visible_fields %} 
+
+                    <div class="card bg-dark border curved text-white">
+
+                        <!-- HMMMMMMMMMMMM 
+                        <div class="tooltip">Hover over me
+                            <span class="tooltiptext">Tooltip text</span>
+                        </div>
+                        -->
+                           
+                        <p class="centre">{{ field.name }}</p>
+                        <p class="centre">{{field}}</p>
+                   
+                    </div>
+
+                    </br>
+         
+                {% endfor %} 
+                
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+                
+            </form>
+        </div>
+	</div>
+</div>
+
+    
+
+
+{% endblock %}
+
+<!--
+
     <h1>Register Here</h1>
     <form method="post" action=".">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Register" />
     </form>
-{% endblock %}
+
+
+    {% for hidden in form.hidden_fields %} 
+                    {{ hidden }} 
+                {% endfor %} 
+
+                {% for field in form.visible_fields %} 
+                    {{ field.errors }} 
+
+        <div class="form-group">
+        <label>{{ field.help_text }}</label>
+        <div class="form-control">{{ field }}</div>
+    </div>
+
+    {% endfor %} 
+
+    <div class="tooltip">{{ field.name }}
+                            <span class="tooltiptext">{{ field.help_text }}</span>
+                        </div>
+-->
