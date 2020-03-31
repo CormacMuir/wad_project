@@ -1,22 +1,74 @@
 {% extends 'workitout/base.html' %}
 {% load staticfiles %}
 {% block title_block %}
-    {{ title }}
+{{ title }}
 {% endblock %}
 
 {% block body_block %}
 <div>
-        <h2>{{ title }}</h2>
-        <div>{{ description }}</div>
-        <div>{{ tags }}</div>
-        <div></div>
-        <div>Difficulty: {{ difficulty }}</div>
-        <div>Duration: {{ duration }}</div>
-        <div></div>
-        <div>Creator: {{ creator }}</div>
-        <div>Date Created: {{ date }}</div>
-        <div>Likes: {{ likes }}</div>
-        
+    <h2 id="like_start" data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ title }}</h2>
+    {{ workout.description }}
+    {{ tags }}
+    Difficulty: {{ workout.difficulty }}
+    Duration: {{ workout.duration }}
+    Creator: {{ creator }}
+    Date Created: {{ workout.date_published }}
+    Likes: {{ likes }}
+    {%for e in exercises %}
+    {%for el in e %}
+    {{el}}
+    {%endfor%}
+    {%endfor%}
+
+
+    <div>
+        <strong id="like_count">{{ likes}}</strong> likes
+        {% if user.is_authenticated %}
+            
+                <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="thumbs-up"></span>
+                    Like Workout
+                </button>
+            
+                <button id="unlike_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="thumbs-down"></span>
+                    Unlike Workout
+                </button>
+
+        {% endif %}
+    </div>
+
+    <div>
+        {% if user.is_authenticated %}
+        <div id="success_save" class="alert alert-success" role="alert">
+          </div>
+            
+                <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="save"></span>
+                    Save Workout
+                </button>
+                <button id="unsave_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                    <span data-feather="x-square"></span>
+                    Unsave Workout
+                </button>
+            
+
+        {% endif %}
+    </div>
+
+    <table style="width:80%" id="workoutTable">
+        <tr>
+            <th>Exercise</th>
+            <th>Sets</th>
+            <th>Reps</th>
+          </tr>
+        {% for exercise in exercises %}
+        <tr>
+            {%for entry in exercise %}
+            <td>{{entry}}</td>
+            {%endfor%}
+        </tr>
+        {%endfor%}
 </div>
 
 
