@@ -1,7 +1,7 @@
 from django import forms
 from workitout.models import Workout, Exercise, ExInWorkout, UserProfile
 from django.contrib.auth.models import User
-
+from django.contrib.auth.forms import UserCreationForm,UserChangeForm
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
@@ -26,6 +26,18 @@ class CreateWorkoutForm(forms.ModelForm):
         fields = ['title', 'description', 'isPrivate']
 
 
+class EditProfileForm(UserChangeForm):
 
+    class Meta:
+        model = User
+        fields=(
+            'email',
+
+        )
+
+class EditUserProfileForm(forms.ModelForm):
+    class Meta:
+        model=UserProfile
+        fields = ('bio','picture','isPrivate')
 
 
