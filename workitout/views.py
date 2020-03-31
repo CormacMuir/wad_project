@@ -76,7 +76,7 @@ def user_page(request, user_name):
 
         
         for w in user1.saved.all():
-            print("saved")
+            w.numLikes = len(w.likes.all())
             saved.append(w)
         
         for w in Workout.objects.filter(creator=user_obj):
@@ -90,6 +90,12 @@ def user_page(request, user_name):
                 context_dict['isFollower'] = "true"
                 break
             
+        if request.user!=user_obj:
+            context_dict['self_view'] = False
+        else:
+            context_dict['self_view'] = True
+
+
 
         context_dict['userProfile'] = user1
         context_dict['username'] = user_obj.username
@@ -102,6 +108,7 @@ def user_page(request, user_name):
         context_dict['saved'] = saved
         context_dict['created'] = created
         context_dict['current_user'] = request.user
+        
     except User.DoesNotExist:
         context_dict['userProfile'] = None
     
@@ -148,6 +155,7 @@ class LikeWorkoutView(View):
         toLike = request.GET['like']
         try:
             workout = Workout.objects.get(id=workout_id)
+            
         except Workout.DoesNotExist:
             return HttpResponse(-1)
         except ValueError:
@@ -207,22 +215,24 @@ class SaveWorkoutView(View):
             user = User.objects.get(id=user_id)
             workout = Workout.objects.get(id=workout_id)
         except Workout.DoesNotExist:
+            
             return HttpResponse(-1)
         except ValueError:
+            
             return HttpResponse(-1)
         except User.DoesNotExist:
+            
             return HttpResponse(-1)
-
+        
         user_profile = UserProfile.objects.get(user = user)
+        print("attempting to save "+workout.title+" to user: "+user_profile.user.username)
         
         if to_save =="true":
+        
             user_profile.saved.add(workout)
-            user_profile.save()
-            
             return HttpResponse(str(workout.title))
         else:
             user_profile.saved.remove(workout)
-            user_profile.save()
             return HttpResponse(str(workout.title))
 
 def exercise_page(request, exercise_title_slug):
@@ -272,7 +282,7 @@ def workout_page(request, workout_id,creator):
                 
             if request.user in workout.likes.all():
                 context_dict['has_liked'] = True
-                print("here")
+                
             else:
                 context_dict['has_liked'] = False
         
@@ -285,7 +295,7 @@ def workout_page(request, workout_id,creator):
         exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
         context_dict['exercises'] = exercises
 
-        print(context_dict['exercises'][0])
+        
     except Workout.DoesNotExist:
         context_dict['workout'] = None
 

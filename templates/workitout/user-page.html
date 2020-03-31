@@ -17,7 +17,7 @@
     <strong id="following_count">{{ following }}</strong> following
     <strong id="follow_count">{{ followers }}</strong> followers
     {% if user.is_authenticated %}
-        
+    {% if self_view is False %}        
             <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
                 <span data-feather="user-check"></span>
                 Follow
@@ -28,6 +28,7 @@
                 Unfollow 
             </button>
 
+    {% endif %}
     {% endif %}
 </div>
 
