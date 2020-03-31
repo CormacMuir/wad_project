@@ -7,7 +7,9 @@
 {% block body_block %}
 {% if userProfile %}
 <h1 id="follow_start" data-isFollowing={{isFollower}} >{{username}}</h1>
+{%if picture %}
 <img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
+{% endif %}
 {% if private %}
     This profile is private.
 {% else %}

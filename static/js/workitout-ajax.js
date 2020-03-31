@@ -102,7 +102,7 @@ $(document).ready(function() {
         $.get('/workitout/save_workout',
             {'workout_id': workoutIdVar,'user_id':userIdVar,'to_save':toSave},
             function(data) {
-                $('#success_save').html("You successfully saved"+data);
+                $('#success_save').html("You successfully saved "+"<b>"+data+"</b>");
                 $('#save_btn').hide();
                 $('#unsave_btn').show();
                 $('#success_save').show();
@@ -119,7 +119,7 @@ $(document).ready(function() {
         $.get('/workitout/save_workout',
             {'workout_id': workoutIdVar,'user_id':userIdVar,'to_save':toSave},
             function(data) {
-                $('#success_save').html("You successfully removed "+data+" from your saved workouts");
+                $('#success_save').html("You successfully removed "+"<b>"+data+"</b>"+" from your saved workouts");
                 $('#unsave_btn').hide();
                 $('#save_btn').show();
                 $('#success_save').show();

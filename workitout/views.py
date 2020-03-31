@@ -99,7 +99,10 @@ def user_page(request, user_name):
 
         context_dict['userProfile'] = user1
         context_dict['username'] = user_obj.username
-        context_dict['picture'] = user1.picture
+        try:
+            context_dict['picture'] = user1.picture
+        except user1.picture.DoesNotExist:
+            context_dict_dict['picture'] = None
         context_dict['bio'] = user1.bio
         context_dict['following'] = len(user1.following.all())
         context_dict['followers'] = len(user1.followers.all())
