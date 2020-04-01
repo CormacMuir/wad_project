@@ -74,8 +74,11 @@
                   {{workout.description}}
               </div>
 
-			  <p class = "blue" > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%}
-
+              <p class = "blue" > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%}
+                <div align="right"><p><u>Completed this workout? Share on twitter!</u></p>
+                <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Hello%20world"
+    data-size="large">Tweet</a>
+</div>
 			</div>
 			<div class="card-footer text-muted">
 			  Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>
@@ -100,6 +103,8 @@
         </div>
       </div>
     </div>
+    
   </div>
+  
 {%endfor%}
 {% endblock %}
