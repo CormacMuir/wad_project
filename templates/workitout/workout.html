@@ -38,8 +38,10 @@
                   Difficulty : {{ workout.difficulty }} <br/>
                   Duration : {{ workout.duration }} <br/>
                   <strong id="like_count">{{likes}}</strong> users like this workout.
+                </div>
          {% if user.is_authenticated %}
-            
+                  
+                  <div>
                   <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
                       <span data-feather="thumbs-up"></span>
                       Like Workout
@@ -50,13 +52,8 @@
                       Unlike Workout
                   </button>
   
-          {% endif %}
-      </div>
-  
-      <div>
-          {% if user.is_authenticated %}
-          <div id="success_save" class="alert alert-success" role="alert">
-            </div>
+          
+          
               
                   <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
                       <span data-feather="save"></span>
@@ -66,6 +63,8 @@
                       <span data-feather="x-square"></span>
                       Unsave Workout
                   </button>
+                  <div id="success_save" class="alert alert-success" role="alert">
+                  </div>
               
           {% endif %}
 
