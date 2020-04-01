@@ -189,13 +189,17 @@ def exercises(request):
         request_parameters = request.GET
 
         query = request_parameters.get('q',"")
-        context_dict['query'] = str(query)
+        if query != "":
+            context_dict['query'] = str(query)
         filters['muscle_group'] = request_parameters.get('muscle_group',"")
         filters['equipment'] = request_parameters.get('equipment',"")
         filters['ex_type'] = request_parameters.get('ex_type',"")
     
-    exercise_list = get_exercise_queryset(query, filters)
+    exercise_list, filter_objs = get_exercise_queryset(query, filters)
+    context_dict['filter_objs'] = filter_objs
 
+    if filter_objs == []:
+        del context_dict['filter_objs']
 
     for ex in exercise_list:
         
@@ -216,6 +220,8 @@ def exercises(request):
 
 def get_exercise_queryset(query=None, filters={}):
 
+    filter_objs = []
+
     queries = query.split(" ")
     queryset = Exercise.objects.filter( Q(title__icontains=queries[0]) )
     for query in queries:
@@ -223,6 +229,7 @@ def get_exercise_queryset(query=None, filters={}):
     
     try:
         mg = MuscleGroup.objects.get(name=filters['muscle_group'])
+        filter_objs.append(mg)
         qs2 = Exercise.objects.filter(muscle_group=mg)
         queryset = queryset.intersection(qs2)
     except MuscleGroup.DoesNotExist:
@@ -230,6 +237,7 @@ def get_exercise_queryset(query=None, filters={}):
     
     try:
         eq = Equipment.objects.get(slug=filters['equipment'])
+        filter_objs.append(eq)
         qs3 = Exercise.objects.filter(equipment__in=[eq])
         queryset = queryset.intersection(qs3)
     except Equipment.DoesNotExist:
@@ -237,12 +245,13 @@ def get_exercise_queryset(query=None, filters={}):
 
     try:
         t = Tag.objects.get(name=filters['ex_type'])
+        filter_objs.append(t)
         qs4 = Exercise.objects.filter(tags__in=[t])
         queryset = queryset.intersection(qs4)
     except Tag.DoesNotExist:
         pass
 
-    return list(set(queryset))
+    return list(set(queryset)), filter_objs
 
 
 

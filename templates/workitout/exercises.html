@@ -10,6 +10,8 @@
 <style>
     .search-bar{
         color: rgb(82, 160, 196);
+        padding: 20px;
+        width: 90%;
     }
     .card-body{
         padding: 20px;
@@ -17,55 +19,22 @@
     } 
 
     .dropdown-toggle{
-        background-color: #cfcfcf;
+        background-color: rgb(82, 160, 196);
     }
 
-    .checkbox-menu li label {
-        display: block;
-        padding: 3px 10px;
-        clear: both;
-        font-weight: normal;
-        line-height: 1.42857143;
-        color: #333;
-        white-space: nowrap;
-        margin:0;
-        transition: background-color .4s ease;
-    }
-    .checkbox-menu li input {
-        margin: 0px 5px;
-        top: 2px;
-        position: relative;
-    }
 
-    .checkbox-menu li.active label {
-        background-color: #cbcbff;
-        font-weight:bold;
-    }
-
-    .checkbox-menu li label:hover,
-    .checkbox-menu li label:focus {
-        background-color: #f5f5f5;
-    }
-
-    .checkbox-menu li.active label:hover,
-    .checkbox-menu li.active label:focus {
-        background-color: #b8b8ff;
-}
 
 </style>
 
 <div class="card m-5 mx-auto">
-    <div class="search-bar m-3">
-        <form method="get">
-            <p><h4>Search Exercises </h4></p>
-            <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
-        </form>
-    </div>
-</div>
-
-<!-- Matthew added -->
-<div class="card m-5 mx-auto">
-    <form method="get" action="/workitout/exercises">
+    <form id="exercise_search">
+        <div class="row" >
+            <div class="search-bar m-3">
+                
+                    <p><h4>Search Exercises </h4></p>
+                    <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm">
                 <button class="btn btn-default dropdown-toggle" type="button" id="mg-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -80,9 +49,9 @@
                         </li>
 
                     {% endfor %}
-                </ul>
-            </div>
-
+                            </ul>
+                        </div>
+            
             <div class="col-sm">
                 <button class="btn btn-default dropdown-toggle" type="button" id="eq-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <label for="eq-dropdown">Equipment</label><br>
@@ -97,7 +66,7 @@
                     {% endfor %}
                 </ul>
             </div>
-
+            
             <div class="col-sm">
                 <button class="btn btn-default dropdown-toggle" type="button" id="t-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <label for="t-dropdown">Exercise Type</label><br>
@@ -137,23 +106,23 @@
 
 {% else %}
 
-    <div>   
-        <!--Put snippet here-->
-        {% include 'workitout/snippets/exercise_snippet.html' with query=query %}
+    <div>
+        {% include 'workitout/snippets/exercise_snippet.html' %}
     </div>
+
 
 {% endif %}
 
 
 
 <!--Java script to help with the search function-->
+{% if query %}
+    <script type="text/javascript">
 
-<script type="text/javascript">
+        document.getElementById("id_q").value = "{{query}}"
 
-    document.getElementById("id_q").value = "{{query}}"
-
-</script>
-
+    </script>
+{% endif %}
 
 
 
