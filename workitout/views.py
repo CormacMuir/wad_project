@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
-from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
+from workitout.models import Workout , Exercise, UserProfile, ExInWorkout, Tag, Equipment, MuscleGroup, Muscle
 from django.forms.models import model_to_dict
 from workitout.forms import UserProfileForm,EditProfileForm,EditUserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
+
 
 from workitout.forms import CreateWorkoutForm
 from django.db.models import Q
@@ -195,26 +196,78 @@ def exercises(request):
 
     context_dict={}
 
-    # marty added code here
     query = ""
+    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':""}
     if request.GET:
-        query = request.GET['q']
-        context_dict['query'] = str(query)
+        request_parameters = request.GET
 
-    # cormac knowledge
-    exercise_list = get_exercise_queryset(query)
+        query = request_parameters.get('q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+        filters['muscle_group'] = request_parameters.get('muscle_group',"")
+        filters['equipment'] = request_parameters.get('equipment',"")
+        filters['ex_type'] = request_parameters.get('ex_type',"")
+    
+    exercise_list, filter_objs = get_exercise_queryset(query, filters)
+    context_dict['filter_objs'] = filter_objs
+
+    if filter_objs == []:
+        del context_dict['filter_objs']
 
     for ex in exercise_list:
         
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
         ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+
+    
     
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
     context_dict['exercises'] = exercise_list
+    context_dict['equipment'] = Equipment.objects.all()
+    context_dict['muscle_groups'] = MuscleGroup.objects.all()
+    context_dict['muscles'] = Muscle.objects.all()
+    context_dict['ex_type'] = ["push", "pull", "upper", "lower"]
 
-    #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
+
+
+def get_exercise_queryset(query=None, filters={}):
+
+    filter_objs = []
+
+    queries = query.split(" ")
+    queryset = Exercise.objects.filter( Q(title__icontains=queries[0]) )
+    for query in queries:
+        queryset = queryset.intersection(Exercise.objects.filter( Q(title__icontains=query) ))
+    
+    try:
+        mg = MuscleGroup.objects.get(name=filters['muscle_group'])
+        filter_objs.append(mg)
+        qs2 = Exercise.objects.filter(muscle_group=mg)
+        queryset = queryset.intersection(qs2)
+    except MuscleGroup.DoesNotExist:
+        pass
+    
+    try:
+        eq = Equipment.objects.get(slug=filters['equipment'])
+        filter_objs.append(eq)
+        qs3 = Exercise.objects.filter(equipment__in=[eq])
+        queryset = queryset.intersection(qs3)
+    except Equipment.DoesNotExist:
+        pass
+
+    try:
+        t = Tag.objects.get(name=filters['ex_type'])
+        filter_objs.append(t)
+        qs4 = Exercise.objects.filter(tags__in=[t])
+        queryset = queryset.intersection(qs4)
+    except Tag.DoesNotExist:
+        pass
+
+    return list(set(queryset)), filter_objs
+
+
 
 class LikeWorkoutView(View):
     @method_decorator(login_required)
@@ -374,23 +427,6 @@ def workout_page(request, workout_id,creator):
 
     return render(request, 'workitout/workout.html', context=context_dict)
 
-
-def get_exercise_queryset(query=None):
-
-    queryset = []
-
-    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
-
-    for q in queries:
-        posts = Exercise.objects.filter( 
-            Q(title__icontains=q) | 
-            Q(difficulty__icontains=q) 
-            ).distinct()
-        for post in posts:
-            queryset.append(post)
-
-    # create unique set and then convert to list
-    return list(set(queryset)) 
 
 def get_workout_queryset(query=None):
 
