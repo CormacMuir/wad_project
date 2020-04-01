@@ -58,6 +58,7 @@ def create_workout(request):
         obj_id = str(obj.id)
         form = CreateWorkoutForm()
         return redirect('workout/' + obj_id)
+        
     context_dict['form'] = form
     context_dict['randvar'] = True
     return render(request, 'workitout/create-workout.html', context_dict)
@@ -208,8 +209,14 @@ def exercises(request):
     exercise_list, filter_objs = get_exercise_queryset(query, filters)
     context_dict['filter_objs'] = filter_objs
 
-    if filter_objs == []:
-        del context_dict['filter_objs']
+    if filters['muscle_group'] != "":
+        context_dict['mg_filter'] = filter_objs['mg_filter']
+
+    if filters['equipment'] != "":
+        context_dict['eq_filter'] = filter_objs['eq_filter']
+
+    if filters['ex_type'] != "":
+        context_dict['t_filter'] = filter_objs['t_filter']
 
     for ex in exercise_list:
         
@@ -221,9 +228,8 @@ def exercises(request):
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
     context_dict['exercises'] = exercise_list
-    context_dict['equipment'] = Equipment.objects.all()
-    context_dict['muscle_groups'] = MuscleGroup.objects.all()
-    context_dict['muscles'] = Muscle.objects.all()
+    context_dict['equipment'] = Equipment.objects.all().order_by('name')
+    context_dict['muscle_groups'] = MuscleGroup.objects.all().order_by('name')
     context_dict['ex_type'] = ["push", "pull", "upper", "lower"]
 
     return render(request, 'workitout/exercises.html', context_dict)
@@ -231,7 +237,7 @@ def exercises(request):
 
 def get_exercise_queryset(query=None, filters={}):
 
-    filter_objs = []
+    filter_objs = {}
 
     queries = query.split(" ")
     queryset = Exercise.objects.filter( Q(title__icontains=queries[0]) )
@@ -240,7 +246,7 @@ def get_exercise_queryset(query=None, filters={}):
     
     try:
         mg = MuscleGroup.objects.get(name=filters['muscle_group'])
-        filter_objs.append(mg)
+        filter_objs['mg_filter']= mg
         qs2 = Exercise.objects.filter(muscle_group=mg)
         queryset = queryset.intersection(qs2)
     except MuscleGroup.DoesNotExist:
@@ -248,7 +254,7 @@ def get_exercise_queryset(query=None, filters={}):
     
     try:
         eq = Equipment.objects.get(slug=filters['equipment'])
-        filter_objs.append(eq)
+        filter_objs['eq_filter']= eq
         qs3 = Exercise.objects.filter(equipment__in=[eq])
         queryset = queryset.intersection(qs3)
     except Equipment.DoesNotExist:
@@ -256,7 +262,7 @@ def get_exercise_queryset(query=None, filters={}):
 
     try:
         t = Tag.objects.get(name=filters['ex_type'])
-        filter_objs.append(t)
+        filter_objs['t_filter']= t
         qs4 = Exercise.objects.filter(tags__in=[t])
         queryset = queryset.intersection(qs4)
     except Tag.DoesNotExist:

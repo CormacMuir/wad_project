@@ -10,6 +10,8 @@
         width:100%;
     }
 
+
+
 </style>
 
 {% if exercise %}
@@ -30,20 +32,20 @@
     <div class="row">
         <div class="card m-auto">
             <div class="card-body mt-2 mb-2">
-                <h2 class="card-title">No Results</h2>
+                <h2 class="card-title">No Results for</h2>
                     {% if  query %}
-                        <p class="card-text">for search {{query}}:
+                    <p class="card-text">search: {{query}}:
                     {% endif %}
-                    {% if  filter_objs %}
-                        <p class="card-text">with filters:<br>
-                                {% for f in filter_objs %}
-                                <li>{{ f }}</li>
-                                {% endfor %}
-                        </p>
+                    {% if  mg_filter %}
+                    <p class="card-text">Muscle Group: {{ mg_filter.name|title }}</p>
+                    {% endif %}
+                    {% if  eq_filter %}
+                    <p class="card-text">Equipment: {{ eq_filter.name|title }}</p>
+                    {% endif %}
+                    {% if  t_filter %}
+                    <p class="card-text">Type: {{ t_filter.name|title }}</p>
                     {% endif %}
 
-
-                    
                 </div>
             </div>
         </div>

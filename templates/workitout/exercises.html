@@ -18,10 +18,36 @@
         width: 90%;
     } 
 
-    .dropdown-toggle{
-        background-color: rgb(82, 160, 196);
+
+    .scrollable-menu {
+        height: auto;
+        max-height: 250px;
+        overflow-x: hidden;
     }
 
+    .row{
+        padding: 10px;
+    }
+
+    .dropdown-toggle{
+        background-color: rgb(82, 160, 196);
+        width:200px;
+        height:40px;
+
+    }
+
+    .dropdown-menu{
+        width: 200px;
+    }
+
+    .sbm-btn{
+        width:80px;
+
+    }
+    .rd-btn:hover{
+        background-color: rgba(82, 160, 196, 0.6);
+
+    }
 
 
 </style>
@@ -30,36 +56,37 @@
     <form id="exercise_search">
         <div class="row" >
             <div class="search-bar m-3">
-                
                     <p><h4>Search Exercises </h4></p>
                     <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
             </div>
         </div>
         <div class="row">
             <div class="col-sm">
-                <button class="btn btn-default dropdown-toggle" type="button" id="mg-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <button class="btn btn-default dropdown-toggle" type="button" id="mg-dropdown" data-toggle="dropdown">
                     <label for="mg-dropdown">Muscle Group</label><br>
+                    <span class="caret"></span></button>
                 </button>
-                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="mg-dropdown-menu">
+                <ul class="dropdown-menu scrollable-menu allow-focus">
                     {% for mg in muscle_groups %}
-                        <li >
-                            <label>
+                        <li class=rd-btn>
+                            <label class= rd-btn-label>
                                 <input type="radio" id="{{ mg.name }}" name="muscle_group" value="{{ mg.name }}">{{ mg.name|title }}
                             </label>
                         </li>
 
                     {% endfor %}
-                            </ul>
-                        </div>
-            
+                </ul>
+            </div>
+
             <div class="col-sm">
-                <button class="btn btn-default dropdown-toggle" type="button" id="eq-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <button class="btn btn-default dropdown-toggle" type="button" id="eq-dropdown" data-toggle="dropdown">
                     <label for="eq-dropdown">Equipment</label><br>
+                    <span class="caret"></span></button>
                 </button>
-                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="eq-dropdown-menu">
+                <ul class="dropdown-menu scrollable-menu allow-focus">
                     {% for eq in equipment %}
-                        <li >
-                            <label>
+                        <li class=rd-btn>
+                            <label class= rd-btn-label>
                                 <input type="radio" id="{{ eq.slug }}" name="equipment" value="{{ eq.slug }}">{{ eq.name|title }}
                             </label>
                         </li>
@@ -68,13 +95,14 @@
             </div>
             
             <div class="col-sm">
-                <button class="btn btn-default dropdown-toggle" type="button" id="t-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <button class="btn btn-default dropdown-toggle" type="button" id="t-dropdown" data-toggle="dropdown">
                     <label for="t-dropdown">Exercise Type</label><br>
+                    <span class="caret"></span></button>
                 </button>
-                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="t-dropdown-menu">
+                <ul class="dropdown-menu scrollable-menu allow-focus">
                     {% for type in ex_type %}
-                        <li >
-                            <label>
+                        <li class=rd-btn>
+                            <label class= rd-btn-label>
                                 <input type="radio" id="{{ type }}" name="ex_type" value="{{ type }}">{{ type|title }}
                             </label>
                         </li>
@@ -82,8 +110,7 @@
                 </ul>
             </div>
         </div>
-        <input type="submit" value="Filter">
-        <input type="reset">
+        <input class=sbm-btn type="submit" value="Filter">
     </form>
 </div>
 
