@@ -15,8 +15,7 @@
 {% if exercise %}
 
     <div class="card">
-
-            <img class="card-img-top" src="{% static exercise.image1 %}" alt="Card image cap">
+            <img class="card-img-top"  src="{% static exercise.image1 %}" data-alt-src="{% static exercise.image2 %}" alt="Card image cap">
 
             <div class="card-body">
                 <h5 class="card-title">{{exercise.title}}</h5>
@@ -24,7 +23,6 @@
                 <p class="card-text">Difficulty Level {{exercise.difficulty}}</p>           
                 <p class="card-text">{{exercise.description.primer}}</p>
             </div>
-
     </div>
 
 {% else %}

@@ -14,7 +14,17 @@
     .card-body{
         padding: 20px;
         width: 90%;
+    } 
+    #check-column-1{
+        float:left;
     }
+    #check-column-2{
+        float:left;
+    }
+    #check-column-3{
+        float:left;
+    }
+
 </style>
 
 <div class="card m-5 mx-auto">
@@ -26,6 +36,61 @@
     </div>
 </div>
 
+<!-- Matthew added -->
+<div>
+    <form method="get" action="/workitout/exercises">
+        <div class="check-cloumn-1">
+            {% for mg in muscle_groups %}
+                {% if mg in filters %}
+                <div id="ck-button">
+                    <input type="checkbox" id="{{ mg.name }}" name="{{ mg.name }}" value="" checked>
+                    <label for="{{ mg.name }}">{{ mg.name|title }}</label><br>
+                </div>
+                {% else %}
+                <div id="ck-button">
+                    <input type="checkbox" id="{{ mg.name }}" name="{{ mg.name }}" value="">
+                    <label for="{{ mg.name }}">{{ mg.name|title }}</label><br>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="check-cloumn-2">
+            {% for eq in equipment %}
+                {% if eq in filters %}
+                    <div id="ck-button">
+                        <input type="checkbox" id="{{ eq.slug }}" name="{{ eq.slug }}" value="" checked>
+                        <label for="{{ eq.name }}">{{ eq.name|title }}</label><br>
+                    </div>
+                {% else %}
+                    <div id="ck-button">
+                        <input type="checkbox" id="{{ eq.slug }}" name="{{ eq.slug }}" value="">
+                        <label for="{{ eq.name }}">{{ eq.name|title }}</label><br>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="check-cloumn-3">
+            {% for type in types %}
+                {% if type in filters %}
+                    <div id="ck-button">
+                        <input type="checkbox" id="{{ type }}" name="{{ type }}" value="" checked>
+                        <label for="{{ type }}">{{ type|title }}</label><br>
+                    </div>
+                {% else %}
+                    <div id="ck-button">
+                        <input type="checkbox" id="{{ type }}" name="{{ type }}" value="">
+                        <label for="{{ type }}">{{ type|title }}</label><br>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <input type="submit" value="Filter">
+            <input type="reset">
+        </div>
+        
+    </form>
+</div>
 
 {% if exercises %}
 
@@ -62,6 +127,8 @@
     document.getElementById("id_q").value = "{{query}}"
 
 </script>
+
+
 
 
 {% endblock %}

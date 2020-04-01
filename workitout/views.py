@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
-from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
+from workitout.models import Workout , Exercise, UserProfile, ExInWorkout, Tag, Equipment, MuscleGroup, Muscle
 from django.forms.models import model_to_dict
 from workitout.forms import UserProfileForm,EditProfileForm,EditUserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
+
 
 from workitout.forms import CreateWorkoutForm
 from django.db.models import Q
@@ -182,25 +183,81 @@ def exercises(request):
 
     context_dict={}
 
-    # marty added code here
     query = ""
+    filters = []
     if request.GET:
-        query = request.GET['q']
+        if 'q' in request.GET.keys():
+            query = request.GET['q']
         context_dict['query'] = str(query)
 
-    # cormac knowledge
-    exercise_list = get_exercise_queryset(query)
+        for tag in Tag.objects.all():
+            if tag.name in request.GET.keys():
+                filters.append(tag)
+
+        for equip in Equipment.objects.all():
+            if equip.slug in request.GET.keys():
+                filters.append(equip)
+                
+        context_dict['filters'] = filters
+
+    exercise_list = get_exercise_queryset(query, filters)
+
 
     for ex in exercise_list:
         
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
         ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+
+    
     
     context_dict['username'] = request.user.username
     context_dict['exercises'] = exercise_list
+    context_dict['equipment'] = Equipment.objects.all()
+    context_dict['muscle_groups'] = MuscleGroup.objects.all()
+    context_dict['muscles'] = Muscle.objects.all()
+    context_dict['types'] = ["push", "pull", "upper", "lower"]
 
-    #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
+
+    
+
+def get_exercise_queryset(query=None, filters=[]):
+
+    queryset = []
+    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
+
+    for q in queries:
+        posts = Exercise.objects.filter(
+            Q(title__icontains=q) | 
+            Q(difficulty__icontains=q) 
+            ).distinct()
+        for post in posts:
+            queryset.append(post)
+
+    if filters != []:
+        filterset = []
+        for f in filters:
+            if isinstance(f, Tag):
+
+                posts = Exercise.objects.filter(tags__in=[f]).distinct()
+
+            if isinstance(f, Equipment):
+                print("in")
+                posts = Exercise.objects.filter(equipment__in=[f]).distinct()
+
+            for post in posts:
+                filterset.append(post)
+            
+        outset = [obj for obj in queryset if obj in filterset]
+
+    else:
+        outset = queryset
+
+    # create unique set and then convert to list
+    return list(set(outset))
+
+
+
 class LikeWorkoutView(View):
     @method_decorator(login_required)
     def get(self, request):
@@ -357,23 +414,6 @@ def workout_page(request, workout_id,creator):
 
     return render(request, 'workitout/workout.html', context=context_dict)
 
-
-def get_exercise_queryset(query=None):
-
-    queryset = []
-
-    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
-
-    for q in queries:
-        posts = Exercise.objects.filter( 
-            Q(title__icontains=q) | 
-            Q(difficulty__icontains=q) 
-            ).distinct()
-        for post in posts:
-            queryset.append(post)
-
-    # create unique set and then convert to list
-    return list(set(queryset)) 
 
 def get_workout_queryset(query=None):
 
