@@ -40,14 +40,14 @@ def home(request):
 
 def create_workout(request):
 
-    context = {}
+    context_dict = {}
 
     # if user isnt authenticated then prompt them to login/register
     user = request.user
     if not user.is_authenticated:
         return redirect(reverse('workitout:must_authenticate'))
 
-    context['username'] = request.user.username
+    context_dict['username'] = request.user.username
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
@@ -61,9 +61,9 @@ def create_workout(request):
         obj_id = str(obj.id)
         form = CreateWorkoutForm()
         return redirect('workout/' + obj_id)
-    context['form'] = form
+    context_dict['form'] = form
     context_dict['randvar'] = True
-    return render(request, 'workitout/create-workout.html', context)
+    return render(request, 'workitout/create-workout.html', context_dict)
 
 def must_authenticate(request):
 
