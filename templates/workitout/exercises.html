@@ -15,80 +15,106 @@
         padding: 20px;
         width: 90%;
     } 
-    #check-column-1{
-        float:left;
+
+    .dropdown-toggle{
+        background-color: #cfcfcf;
     }
-    #check-column-2{
-        float:left;
+
+    .checkbox-menu li label {
+        display: block;
+        padding: 3px 10px;
+        clear: both;
+        font-weight: normal;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        margin:0;
+        transition: background-color .4s ease;
     }
-    #check-column-3{
-        float:left;
+    .checkbox-menu li input {
+        margin: 0px 5px;
+        top: 2px;
+        position: relative;
     }
+
+    .checkbox-menu li.active label {
+        background-color: #cbcbff;
+        font-weight:bold;
+    }
+
+    .checkbox-menu li label:hover,
+    .checkbox-menu li label:focus {
+        background-color: #f5f5f5;
+    }
+
+    .checkbox-menu li.active label:hover,
+    .checkbox-menu li.active label:focus {
+        background-color: #b8b8ff;
+}
 
 </style>
 
 <div class="card m-5 mx-auto">
     <div class="search-bar m-3">
         <form method="get">
-            <p><h4>Specifiy an Exercise, Muscle Group, or Difficulty here </h4></p>
+            <p><h4>Search Exercises </h4></p>
             <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
         </form>
     </div>
 </div>
 
 <!-- Matthew added -->
-<div>
+<div class="card m-5 mx-auto">
     <form method="get" action="/workitout/exercises">
-        <div class="check-cloumn-1">
-            {% for mg in muscle_groups %}
-                {% if mg in filters %}
-                <div id="ck-button">
-                    <input type="checkbox" id="{{ mg.name }}" name="{{ mg.name }}" value="" checked>
-                    <label for="{{ mg.name }}">{{ mg.name|title }}</label><br>
-                </div>
-                {% else %}
-                <div id="ck-button">
-                    <input type="checkbox" id="{{ mg.name }}" name="{{ mg.name }}" value="">
-                    <label for="{{ mg.name }}">{{ mg.name|title }}</label><br>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+        <div class="row">
+            <div class="col-sm">
+                <button class="btn btn-default dropdown-toggle" type="button" id="mg-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <label for="mg-dropdown">Muscle Group</label><br>
+                </button>
+                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="mg-dropdown-menu">
+                    {% for mg in muscle_groups %}
+                        <li >
+                            <label>
+                                <input type="radio" id="{{ mg.name }}" name="muscle_group" value="{{ mg.name }}">{{ mg.name|title }}
+                            </label>
+                        </li>
 
-        <div class="check-cloumn-2">
-            {% for eq in equipment %}
-                {% if eq in filters %}
-                    <div id="ck-button">
-                        <input type="checkbox" id="{{ eq.slug }}" name="{{ eq.slug }}" value="" checked>
-                        <label for="{{ eq.name }}">{{ eq.name|title }}</label><br>
-                    </div>
-                {% else %}
-                    <div id="ck-button">
-                        <input type="checkbox" id="{{ eq.slug }}" name="{{ eq.slug }}" value="">
-                        <label for="{{ eq.name }}">{{ eq.name|title }}</label><br>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+                    {% endfor %}
+                </ul>
+            </div>
 
-        <div class="check-cloumn-3">
-            {% for type in types %}
-                {% if type in filters %}
-                    <div id="ck-button">
-                        <input type="checkbox" id="{{ type }}" name="{{ type }}" value="" checked>
-                        <label for="{{ type }}">{{ type|title }}</label><br>
-                    </div>
-                {% else %}
-                    <div id="ck-button">
-                        <input type="checkbox" id="{{ type }}" name="{{ type }}" value="">
-                        <label for="{{ type }}">{{ type|title }}</label><br>
-                    </div>
-                {% endif %}
-            {% endfor %}
-            <input type="submit" value="Filter">
-            <input type="reset">
+            <div class="col-sm">
+                <button class="btn btn-default dropdown-toggle" type="button" id="eq-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <label for="eq-dropdown">Equipment</label><br>
+                </button>
+                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="eq-dropdown-menu">
+                    {% for eq in equipment %}
+                        <li >
+                            <label>
+                                <input type="radio" id="{{ eq.slug }}" name="equipment" value="{{ eq.slug }}">{{ eq.name|title }}
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="col-sm">
+                <button class="btn btn-default dropdown-toggle" type="button" id="t-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <label for="t-dropdown">Exercise Type</label><br>
+                </button>
+                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="t-dropdown-menu">
+                    {% for type in ex_type %}
+                        <li >
+                            <label>
+                                <input type="radio" id="{{ type }}" name="ex_type" value="{{ type }}">{{ type|title }}
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-        
+        <input type="submit" value="Filter">
+        <input type="reset">
     </form>
 </div>
 

@@ -12,3 +12,13 @@ $(function () {
     $('img.card-img-top').hover(sourceSwap, sourceSwap);
 });
 
+
+// dropdown menus scripts
+$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+    $(this).closest("li").toggleClass("active", this.checked);
+ });
+ 
+ $(document).on('click', '.allow-focus', function (e) {
+   e.stopPropagation();
+ });
+

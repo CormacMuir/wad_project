@@ -184,22 +184,16 @@ def exercises(request):
     context_dict={}
 
     query = ""
-    filters = []
+    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':""}
     if request.GET:
-        if 'q' in request.GET.keys():
-            query = request.GET['q']
+        request_parameters = request.GET
+
+        query = request_parameters.get('q',"")
         context_dict['query'] = str(query)
-
-        for tag in Tag.objects.all():
-            if tag.name in request.GET.keys():
-                filters.append(tag)
-
-        for equip in Equipment.objects.all():
-            if equip.slug in request.GET.keys():
-                filters.append(equip)
-                
-        context_dict['filters'] = filters
-
+        filters['muscle_group'] = request_parameters.get('muscle_group',"")
+        filters['equipment'] = request_parameters.get('equipment',"")
+        filters['ex_type'] = request_parameters.get('ex_type',"")
+    
     exercise_list = get_exercise_queryset(query, filters)
 
 
@@ -215,46 +209,40 @@ def exercises(request):
     context_dict['equipment'] = Equipment.objects.all()
     context_dict['muscle_groups'] = MuscleGroup.objects.all()
     context_dict['muscles'] = Muscle.objects.all()
-    context_dict['types'] = ["push", "pull", "upper", "lower"]
+    context_dict['ex_type'] = ["push", "pull", "upper", "lower"]
 
     return render(request, 'workitout/exercises.html', context_dict)
 
+
+def get_exercise_queryset(query=None, filters={}):
+
+    queries = query.split(" ")
+    queryset = Exercise.objects.filter( Q(title__icontains=queries[0]) )
+    for query in queries:
+        queryset = queryset.intersection(Exercise.objects.filter( Q(title__icontains=query) ))
     
+    try:
+        mg = MuscleGroup.objects.get(name=filters['muscle_group'])
+        qs2 = Exercise.objects.filter(muscle_group=mg)
+        queryset = queryset.intersection(qs2)
+    except MuscleGroup.DoesNotExist:
+        pass
+    
+    try:
+        eq = Equipment.objects.get(slug=filters['equipment'])
+        qs3 = Exercise.objects.filter(equipment__in=[eq])
+        queryset = queryset.intersection(qs3)
+    except Equipment.DoesNotExist:
+        pass
 
-def get_exercise_queryset(query=None, filters=[]):
+    try:
+        t = Tag.objects.get(name=filters['ex_type'])
+        qs4 = Exercise.objects.filter(tags__in=[t])
+        queryset = queryset.intersection(qs4)
+    except Tag.DoesNotExist:
+        pass
 
-    queryset = []
-    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
-
-    for q in queries:
-        posts = Exercise.objects.filter(
-            Q(title__icontains=q) | 
-            Q(difficulty__icontains=q) 
-            ).distinct()
-        for post in posts:
-            queryset.append(post)
-
-    if filters != []:
-        filterset = []
-        for f in filters:
-            if isinstance(f, Tag):
-
-                posts = Exercise.objects.filter(tags__in=[f]).distinct()
-
-            if isinstance(f, Equipment):
-                print("in")
-                posts = Exercise.objects.filter(equipment__in=[f]).distinct()
-
-            for post in posts:
-                filterset.append(post)
-            
-        outset = [obj for obj in queryset if obj in filterset]
-
-    else:
-        outset = queryset
-
-    # create unique set and then convert to list
-    return list(set(outset))
+    return list(set(queryset))
 
 
 
