@@ -9,11 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
-
-
 from workitout.forms import CreateWorkoutForm
-from django.db.models import Q
-from operator import attrgetter
+
 
 
 # marty add
@@ -62,7 +59,7 @@ def create_workout(request):
         form = CreateWorkoutForm()
         return redirect('workout/' + obj_id)
     context['form'] = form
-    context_dict['randvar'] = True
+    context['randvar'] = True
     return render(request, 'workitout/create-workout.html', context)
 
 def must_authenticate(request):

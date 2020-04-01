@@ -14,7 +14,7 @@ $(function () {
 
 
 // dropdown menus scripts
-$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+$(".checkbox-menu").on("change", "input[type='radio']", function() {
     $(this).closest("li").toggleClass("active", this.checked);
  });
  
