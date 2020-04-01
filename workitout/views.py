@@ -108,14 +108,23 @@ def edit_profile(request):
 
 
 def user_page(request, user_name):
+
     context_dict = {}
     context_dict['username'] = request.user.username
+
     try:
+        print("in try")
+
         saved = []
         created = []
         user_obj = User.objects.get(username=user_name)
+
+        print(user_obj.username())
+
+
         user1 = UserProfile.objects.get(user=user_obj)
 
+        
         
         for w in user1.saved.all():
             w.numLikes = len(w.likes.all())
@@ -124,11 +133,11 @@ def user_page(request, user_name):
         for w in Workout.objects.filter(creator=user_obj):
             w.numLikes = len(w.likes.all())
             created.append(w)
-
-
+            
         context_dict['isFollower'] = "false"
+
         for u in user1.followers.all():
-            if u== request.user:
+            if u == request.user:
                 context_dict['isFollower'] = "true"
                 break
             
@@ -144,7 +153,9 @@ def user_page(request, user_name):
         try:
             context_dict['picture'] = user1.picture
         except user1.picture.DoesNotExist:
-            context_dict_dict['picture'] = None
+            #context_dict_dict['picture'] = None
+            context_dict['picture'] = None
+
         context_dict['bio'] = user1.bio
         context_dict['following'] = len(user1.following.all())
         context_dict['followers'] = len(user1.followers.all())
@@ -201,6 +212,7 @@ def exercises(request):
 
     #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
+
 class LikeWorkoutView(View):
     @method_decorator(login_required)
     def get(self, request):

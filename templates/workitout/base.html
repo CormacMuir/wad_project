@@ -42,20 +42,31 @@
             </nav>
 
             {% if user.is_authenticated %}
-            {% if not randvar %}
+
+                {% if not randvar %}
+
+                    <table>
+                        <tr>
+                            <th><a class="btn btn-outline-primary" href="{% url 'workitout:user_page' username %}">My Profile</a>    </th>
+                            <th><a class="btn btn-outline-primary" href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Log Out</a></th>
+                        </tr>
+                    </table>
             
-            <a class="btn btn-outline-primary" href="{% url 'workitout:user_page' username %}">My Profile</a>    
-            <a class="btn btn-outline-primary" href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Log Out</a>
-            {% endif %}
+                        
+                {% endif %}
+
             {% else %}
-            <table>
-                <tr>
-                    <th><a class="btn btn-outline-primary" href="{% url 'auth_login' %}">Log In</a> </th>
-                    <th><a class="btn btn-outline-primary" href="{% url 'registration_register' %}">Register</a></th>
-                </tr>
-            </table>
-            
+
+                <table>
+
+                    <tr>
+                        <th><a class="btn btn-outline-primary" href="{% url 'auth_login' %}">Log In</a> </th>
+                        <th><a class="btn btn-outline-primary" href="{% url 'registration_register' %}">Register</a></th>
+                    </tr>
+                </table>
+
             {% endif %}
+            
           </div>
         
 
