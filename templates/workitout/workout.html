@@ -7,7 +7,13 @@
 {% block body_block %}
 
 <style type="text/css">
-	.card{
+	
+    .col-md-4 img{
+        max-width: 20%;
+        display: block; 
+    }
+    
+    .card{
 		max-width: 700px;
         color:steelblue;
 	}
@@ -27,7 +33,7 @@
 			<img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
 			<div class="card-body mt-2 mb-2">
 
-              <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ title }}</h1>
+              <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ workout.title }}</h1>
               <h6 class="card-subtitle mb-2 text-muted">
                   Difficulty : {{ workout.difficulty }} <br/>
                   Duration : {{ workout.duration }} <br/>
@@ -69,16 +75,32 @@
                   {{workout.description}}
               </div>
 
-			  <p class = "blue" >{{ tags }} 
+			  <p class = "blue" > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%}
 
 			</div>
 			<div class="card-footer text-muted">
 			  Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>
 			</div>
-		</div>
+        </div>
+        
 
 	</div>
 </div>
-
-
+<h1>Exercises <span class="badge badge-secondary">{{ex_num}}</span></h1>
+{%for ex in exercises%}
+<div id="ex_card" class="card mb-3" style="max-width: 100%;">
+    <div class="row no-gutters">
+      <div class="col-md-4">
+        <img src="{% static ex.image1 %}" class="card-img">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">{{ex.exercise.title}}</h5>
+          <p class="card-text">{{ex.exercise.description.primer}}</p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+{%endfor%}
 {% endblock %}

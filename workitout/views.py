@@ -365,8 +365,29 @@ def workout_page(request, workout_id,creator):
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
 
-        exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
+
+        
+
+        exercises_temp = [(exiw.exercise, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        
+        class exercise_obj:
+            def __init__(self, exercise, sets,reps):
+                self.exercise=exercise
+                self.sets=sets
+                self.reps=reps
+                
+
+
+        exercises=[]
+        for e in exercises_temp:
+            ex=exercise_obj(e[0],e[1],e[2])
+            ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
+            ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
+            exercises.append(ex)
+
+
         context_dict['exercises'] = exercises
+        context_dict['ex_num']=len(exercises_temp)
 
         
     except Workout.DoesNotExist:
