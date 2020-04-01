@@ -86,7 +86,7 @@
             {% if workouts %}
 
                     {% for wo in workouts %}
-                        <a href="{% url 'workitout:workout_page' wo.creator wo.id  %}">
+                        
 
                             <div class="card m-auto d-flex flex-column p-3 bg-info">
                                 {% include 'workitout/snippets/workout_snippet.html' with workout=wo %}
