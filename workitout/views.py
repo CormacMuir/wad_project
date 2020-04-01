@@ -119,7 +119,7 @@ def user_page(request, user_name):
         created = []
         user_obj = User.objects.get(username=user_name)
 
-        print(user_obj.username())
+        
 
 
         user1 = UserProfile.objects.get(user=user_obj)
@@ -291,7 +291,7 @@ class SaveWorkoutView(View):
             return HttpResponse(-1)
         
         user_profile = UserProfile.objects.get(user = user)
-        print("attempting to save "+workout.title+" to user: "+user_profile.user.username)
+        
         
         if to_save =="true":
         

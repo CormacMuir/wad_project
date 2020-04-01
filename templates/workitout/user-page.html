@@ -16,7 +16,7 @@
 {%if picture %}
 <img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
 {% endif %}
-{% if private %}
+{% if private and self_view is False %}
     This profile is private.
 {% else %}
 {{bio}}
