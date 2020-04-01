@@ -31,7 +31,7 @@ def home(request):
 
     # queries and returns the newest first
     workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
-
+    context_dict['randvar'] = True
     context_dict['workouts'] = workout_list
     context_dict['username'] = request.user.username
     return render(request, 'workitout/home.html', context_dict)
@@ -61,7 +61,7 @@ def create_workout(request):
         form = CreateWorkoutForm()
         return redirect('workout/' + obj_id)
     context['form'] = form
-
+    context_dict['randvar'] = True
     return render(request, 'workitout/create-workout.html', context)
 
 def must_authenticate(request):
@@ -73,14 +73,14 @@ def search(request):
     #dont remove the 2 lines below
     context_dict = {}
     context_dict['username'] = request.user.username
-
+    context_dict['randvar'] = True
     return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
     #dont remove the 2 lines below
     context_dict = {}
     context_dict['username'] = request.user.username
-
+    context_dict['randvar'] = True
     return render(request, 'workitout/about.html',context_dict)
 
 @login_required   
@@ -103,6 +103,7 @@ def edit_profile(request):
         profile_form = EditUserProfileForm(instance=request.user.userprofile)
         
         context_dict={'form':form,'profile_form':profile_form}
+        context_dict['randvar'] = True
         context_dict['username'] = request.user.username
         return render(request,'workitout/edit-profile.html',context=context_dict)
 
@@ -111,6 +112,7 @@ def user_page(request, user_name):
 
     context_dict = {}
     context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
 
     try:
         print("in try")
@@ -185,7 +187,7 @@ def register_profile(request):
         else:
             print(form.errors)
     context_dict = {'form': form}
-    context_dict['randvar'] = True
+    
     return render(request, 'workitout/profile_registration.html', context_dict)
 
 
@@ -208,6 +210,7 @@ def exercises(request):
         ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
     
     context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
     context_dict['exercises'] = exercise_list
 
     #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
@@ -304,6 +307,7 @@ class SaveWorkoutView(View):
 def exercise_page(request, exercise_title_slug):
     context_dict = {}
     context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
     try:
 
         exercise = Exercise.objects.get(slug=exercise_title_slug)
@@ -338,6 +342,7 @@ def exercise_page(request, exercise_title_slug):
 def workout_page(request, workout_id,creator):
     context_dict = {}
     context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
     try:
         workout = Workout.objects.get(id=workout_id)
         if request.user.is_authenticated:

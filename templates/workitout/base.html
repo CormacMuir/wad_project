@@ -43,17 +43,19 @@
 
             {% if user.is_authenticated %}
 
-                {% if not randvar %}
+                
 
                     <table>
                         <tr>
+                            {% if randvar %}
                             <th><a class="btn btn-outline-primary" href="{% url 'workitout:user_page' username %}">My Profile</a>    </th>
+                            {% endif %}
                             <th><a class="btn btn-outline-primary" href="{% url 'auth_logout' %}?next={% url 'workitout:home'%}">Log Out</a></th>
                         </tr>
                     </table>
             
                         
-                {% endif %}
+                
 
             {% else %}
 

@@ -29,8 +29,8 @@
 
               <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ title }}</h1>
               <h6 class="card-subtitle mb-2 text-muted">
-                  Difficulty : {{ difficulty }} <br/>
-                  Duration : {{ duration }} <br/>
+                  Difficulty : {{ workout.difficulty }} <br/>
+                  Duration : {{ workout.duration }} <br/>
                   <strong id="like_count">{{likes}}</strong> users like this workout.
          {% if user.is_authenticated %}
             
@@ -66,14 +66,14 @@
               </h6>
 
               <div class="card-body mt-2 mb-2">
-                  {{description}}
+                  {{workout.description}}
               </div>
 
 			  <p class = "blue" >{{ tags }} 
 
 			</div>
 			<div class="card-footer text-muted">
-			  Created on {{ date_published }} by {{creator}}
+			  Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>
 			</div>
 		</div>
 
