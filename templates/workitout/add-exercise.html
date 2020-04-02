@@ -1,0 +1,34 @@
+{% extends 'workitout/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    Add an Exercise
+{% endblock %}
+
+{%  block body_block %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 offset-lg-1">
+                <form id="exercise_form" method="post" action="/workitout/create-workout/add-exercise">{% csrf_token %}
+
+                    {% for hidden in form.hidden_fields %} 
+                        {{ hidden }} 
+                    {% endfor %} 
+
+                    {% for field in form.visible_fields %} 
+
+                        {{ field.errors }}  
+        
+                        <div class="form-group">
+                            <label>{{ field.help_text }}</label>
+                            <div class="form-control">{{ field }}</div>
+                        </div>
+                        
+                    {% endfor %}
+                    
+                    <input type="submit" name="submit" value="Add" />
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
-from workitout.forms import CreateWorkoutForm
+
+from workitout.forms import CreateWorkoutForm, AddExerciseForm
 
 
 
@@ -35,33 +36,81 @@ def home(request):
     return render(request, 'workitout/home.html', context_dict)
 
 
+
+
+
 def create_workout(request):
 
-    context_dict = {}
+    context = {}
 
     # if user isnt authenticated then prompt them to login/register
     user = request.user
     if not user.is_authenticated:
         return redirect(reverse('workitout:must_authenticate'))
 
-    context_dict['username'] = request.user.username
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
         obj = form.save(commit=False)
-
-        # foreign key needs to be set before committing the save ^
-        # get the userprofile ID that matches the email of the user
+        obj.creator = user
     
+        workout_list = Workout.objects.order_by("creator")
+        maxID = 0
+        has_created = False
+
+        for workout in workout_list:
+            if workout.creator == user:
+                has_created = True
+                if workout.id > maxID:
+                    maxID = workout.id
+
+        obj.workout = Workout.objects.get(id=(maxID))
+        obj.id = maxID
+        obj.save(update_fields=['title','description','isPrivate'])
+        
+        form = CreateWorkoutForm()
+        return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+    else:
+        obj = form.save(commit=False)
         obj.creator = user
         obj.save()
-        obj_id = str(obj.id)
-        form = CreateWorkoutForm()
-        return redirect('workout/' + obj_id)
-        
+    context['form'] = form
+
+    return render(request, 'workitout/create-workout.html', context)
+
+def add_exercise(request):
+    user = request.user
+    context_dict={}
+
+    form = AddExerciseForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+
+        workout_list = Workout.objects.order_by("creator")
+        maxID = 0
+        has_created = False
+
+        for workout in workout_list:
+            if workout.creator == user:
+                has_created = True
+                if workout.id > maxID:
+                    maxID = workout.id
+
+        obj.workout = Workout.objects.get(id=(maxID))
+        obj.save()
+        form = AddExerciseForm()
+    
+        return HttpResponse('<script type="text/javascript">window.close()</script>')
+
     context_dict['form'] = form
-    context_dict['randvar'] = True
-    return render(request, 'workitout/create-workout.html', context_dict)
+
+    return render(request, 'workitout/add-exercise.html', context_dict)
+
+
+
+
+
+
 
 def must_authenticate(request):
 
@@ -114,19 +163,12 @@ def user_page(request, user_name):
     context_dict['randvar'] = True
 
     try:
-        print("in try")
 
         saved = []
         created = []
         user_obj = User.objects.get(username=user_name)
-
-        
-
-
         user1 = UserProfile.objects.get(user=user_obj)
 
-        
-        
         for w in user1.saved.all():
             w.numLikes = len(w.likes.all())
             saved.append(w)
