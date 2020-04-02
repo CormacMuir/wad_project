@@ -26,6 +26,23 @@ class CreateWorkoutForm(forms.ModelForm):
         fields = ['title', 'description', 'isPrivate']
 
 
+class AddExerciseForm(forms.ModelForm):
+
+    exercise_list = Exercise.objects.order_by('title')  
+
+    # user input
+    exercise        = forms.ModelChoiceField(queryset=exercise_list, help_text="Please select an exercise to add to your workout.")
+    sets            = forms.IntegerField(min_value=0, help_text="Sets")
+    reps            = forms.IntegerField(min_value=0, help_text="Reps")
+
+
+    class Meta:
+        model = ExInWorkout
+        
+        fields = ['exercise','sets', 'reps']
+
+
+
 class EditProfileForm(UserChangeForm):
     password = None
     class Meta:

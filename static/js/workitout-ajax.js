@@ -112,6 +112,7 @@ $(document).ready(function() {
     });
 
     $('#unsave_btn').click(function() {
+        console.log("reached click func")
         var workoutIdVar;
         var userIdVar;
         workoutIdVar = $(this).attr('data-workoutid');
@@ -126,6 +127,17 @@ $(document).ready(function() {
                 $('#success_save').show();
                 
              })
+    });
+    $('#delete_btn').click(function() {
+        if(confirm("Once a workout is deleted it cannot be recovered. Are you sure?")==true){
+        var workoutIdVar;
+        workoutIdVar = $(this).attr('data-workoutid');
+        $.get('/workitout/delete_workout',
+            {'workout_id': workoutIdVar},
+            function(data) {
+                location.reload();
+             })
+            }
     });
 
 

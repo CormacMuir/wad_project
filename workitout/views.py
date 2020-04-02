@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
-from workitout.models import Workout , Exercise, UserProfile, ExInWorkout
+from workitout.models import Workout , Exercise, UserProfile, ExInWorkout, Tag, Equipment, MuscleGroup, Muscle
 from django.forms.models import model_to_dict
 from workitout.forms import UserProfileForm,EditProfileForm,EditUserProfileForm
 from django.contrib.auth.decorators import login_required
@@ -11,9 +11,8 @@ from django.http import HttpResponse
 from django.views import View
 from django.contrib.staticfiles import finders
 
-from workitout.forms import CreateWorkoutForm
-from django.db.models import Q
-from operator import attrgetter
+from workitout.forms import CreateWorkoutForm, AddExerciseForm
+
 
 
 # marty add
@@ -38,6 +37,9 @@ def home(request):
     return render(request, 'workitout/home.html', context_dict)
 
 
+
+
+
 def create_workout(request):
 
     context = {}
@@ -47,23 +49,69 @@ def create_workout(request):
     if not user.is_authenticated:
         return redirect(reverse('workitout:must_authenticate'))
 
-    context['username'] = request.user.username
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
         obj = form.save(commit=False)
-
-        # foreign key needs to be set before committing the save ^
-        # get the userprofile ID that matches the email of the user
+        obj.creator = user
     
+        workout_list = Workout.objects.order_by("creator")
+        maxID = 0
+        has_created = False
+
+        for workout in workout_list:
+            if workout.creator == user:
+                has_created = True
+                if workout.id > maxID:
+                    maxID = workout.id
+
+        obj.workout = Workout.objects.get(id=(maxID))
+        obj.id = maxID
+        obj.save(update_fields=['title','description','isPrivate'])
+        
+        form = CreateWorkoutForm()
+        return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+    else:
+        obj = form.save(commit=False)
         obj.creator = user
         obj.save()
-        obj_id = str(obj.id)
-        form = CreateWorkoutForm()
-        return redirect('workout/' + obj_id)
     context['form'] = form
-    context_dict['randvar'] = True
+
     return render(request, 'workitout/create-workout.html', context)
+
+def add_exercise(request):
+    user = request.user
+    context_dict={}
+
+    form = AddExerciseForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+
+        workout_list = Workout.objects.order_by("creator")
+        maxID = 0
+        has_created = False
+
+        for workout in workout_list:
+            if workout.creator == user:
+                has_created = True
+                if workout.id > maxID:
+                    maxID = workout.id
+
+        obj.workout = Workout.objects.get(id=(maxID))
+        obj.save()
+        form = AddExerciseForm()
+    
+        return HttpResponse('<script type="text/javascript">window.close()</script>')
+
+    context_dict['form'] = form
+
+    return render(request, 'workitout/add-exercise.html', context_dict)
+
+
+
+
+
+
 
 def must_authenticate(request):
 
@@ -116,19 +164,12 @@ def user_page(request, user_name):
     context_dict['randvar'] = True
 
     try:
-        print("in try")
 
         saved = []
         created = []
         user_obj = User.objects.get(username=user_name)
-
-        
-
-
         user1 = UserProfile.objects.get(user=user_obj)
 
-        
-        
         for w in user1.saved.all():
             w.numLikes = len(w.likes.all())
             saved.append(w)
@@ -196,26 +237,83 @@ def exercises(request):
 
     context_dict={}
 
-    # marty added code here
     query = ""
+    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':""}
     if request.GET:
-        query = request.GET['q']
-        context_dict['query'] = str(query)
+        request_parameters = request.GET
 
-    # cormac knowledge
-    exercise_list = get_exercise_queryset(query)
+        query = request_parameters.get('q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+        filters['muscle_group'] = request_parameters.get('muscle_group',"")
+        filters['equipment'] = request_parameters.get('equipment',"")
+        filters['ex_type'] = request_parameters.get('ex_type',"")
+    
+    exercise_list, filter_objs = get_exercise_queryset(query, filters)
+    context_dict['filter_objs'] = filter_objs
+
+    if filters['muscle_group'] != "":
+        context_dict['mg_filter'] = filter_objs['mg_filter']
+
+    if filters['equipment'] != "":
+        context_dict['eq_filter'] = filter_objs['eq_filter']
+
+    if filters['ex_type'] != "":
+        context_dict['t_filter'] = filter_objs['t_filter']
 
     for ex in exercise_list:
         
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
         ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+
+    
     
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
     context_dict['exercises'] = exercise_list
+    context_dict['equipment'] = Equipment.objects.all().order_by('name')
+    context_dict['muscle_groups'] = MuscleGroup.objects.all().order_by('name')
+    context_dict['ex_type'] = ["push", "pull", "upper", "lower"]
 
-    #context_dict['image_paths'] = ["images\\exercises\\" + exercise_title_slug + "-1.png", "images\\exercises\\" + exercise_title_slug + "-2.png"]
     return render(request, 'workitout/exercises.html', context_dict)
+
+
+def get_exercise_queryset(query=None, filters={}):
+
+    filter_objs = {}
+
+    queries = query.split(" ")
+    queryset = Exercise.objects.filter( Q(title__icontains=queries[0]) )
+    for query in queries:
+        queryset = queryset.intersection(Exercise.objects.filter( Q(title__icontains=query) ))
+    
+    try:
+        mg = MuscleGroup.objects.get(name=filters['muscle_group'])
+        filter_objs['mg_filter']= mg
+        qs2 = Exercise.objects.filter(muscle_group=mg)
+        queryset = queryset.intersection(qs2)
+    except MuscleGroup.DoesNotExist:
+        pass
+    
+    try:
+        eq = Equipment.objects.get(slug=filters['equipment'])
+        filter_objs['eq_filter']= eq
+        qs3 = Exercise.objects.filter(equipment__in=[eq])
+        queryset = queryset.intersection(qs3)
+    except Equipment.DoesNotExist:
+        pass
+
+    try:
+        t = Tag.objects.get(name=filters['ex_type'])
+        filter_objs['t_filter']= t
+        qs4 = Exercise.objects.filter(tags__in=[t])
+        queryset = queryset.intersection(qs4)
+    except Tag.DoesNotExist:
+        pass
+
+    return list(set(queryset)), filter_objs
+
+
 
 class LikeWorkoutView(View):
     @method_decorator(login_required)
@@ -241,6 +339,28 @@ class LikeWorkoutView(View):
             workout.likes.remove(User.objects.get(id=user_id))        
             workout.save()
             return HttpResponse(len(workout.likes.all()))
+
+class DeleteWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        workout_id = request.GET['workout_id']
+    
+        try:
+            workout = Workout.objects.get(id=workout_id)
+            ex_list= ExInWorkout.objects.filter(workout=workout)
+            
+        except Workout.DoesNotExist:
+            return HttpResponse(-1)
+        except ExInWorkout.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        for e in ex_list:
+            e.delete()
+        workout.delete()
+        return HttpResponse(1)
+        
 
 class FollowUserView(View):
     @method_decorator(login_required)
@@ -342,6 +462,10 @@ def exercise_page(request, exercise_title_slug):
 
 
 def workout_page(request, workout_id,creator):
+
+    ex_in_workout = []
+
+
     context_dict = {}
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
@@ -401,32 +525,12 @@ def workout_page(request, workout_id,creator):
         context_dict['exercises'] = exercises
         context_dict['ex_num']=len(exercises_temp)
 
-        
+
     except Workout.DoesNotExist:
         context_dict['workout'] = None
 
     return render(request, 'workitout/workout.html', context=context_dict)
 
-
-
-
-
-def get_exercise_queryset(query=None):
-
-    queryset = []
-
-    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
-
-    for q in queries:
-        posts = Exercise.objects.filter( 
-            Q(title__icontains=q) | 
-            Q(difficulty__icontains=q) 
-            ).distinct()
-        for post in posts:
-            queryset.append(post)
-
-    # create unique set and then convert to list
-    return list(set(queryset)) 
 
 def get_workout_queryset(query=None):
 

@@ -31,9 +31,16 @@ class Tag(models.Model):
 class Equipment(models.Model):
 
     name = models.CharField(max_length=128)
+    slug=models.SlugField(unique=True)
+
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Equipment, self).save(*args, **kwargs)
+
 
 class Description(models.Model):
 

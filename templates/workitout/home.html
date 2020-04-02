@@ -7,8 +7,25 @@
 {% block body_block %}
 
 <style type="text/css">
-    .card{
-        min-width: 250px;
+    .card-container-feed{
+        min-width: 40%;
+        max-width: 40%;
+
+        max-height: 750px;
+    }
+
+    .card-container-map{
+        min-width: 40%;
+        max-width: 40%;
+
+        max-height: 750px;
+    }
+    .card-map{
+        min-width: 100%;
+        max-width: 100%;
+
+        max-height: 72%;
+        min-height: 72%;
     }
     .container{
         padding:20px;
@@ -55,6 +72,21 @@
 	.lead{
 		font-size: 17px;
 	}
+
+    /* Always set the map height explicitly to define the size of the div
+    * element that contains the map. */
+    #map {
+    height: 73%;
+    width: 100%;
+    }
+    /* Optional: Makes the sample page fill the window. */
+    html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    }
+    
+
 </style>
 
 
@@ -63,38 +95,39 @@
     <div class="row">
 
         <!--Feed starts-->
-        <div class="m-2 col rounded bg-white border border-info">
+        <div class="card-container-feed m-2 col  overflow-auto rounded bg-white border border-info">
 
-        </br>
+            </br>
 
             <!--<div class="mb-3 rounded border border-info">-->
 
-                <!--Search funcitonality-->
-				<div class="card m-auto d-flex flex-column p-3 border border-info">
-					<!--<img class="img-fluid d-block m-auto pb-2" src="{% static 'images/wad-logo-blue.jpg' %}" width="72" height="72">-->
+            <!--Search funcitonality-->
+            <div class="card m-auto d-flex flex-column p-3 border border-info">
+                <!--<img class="img-fluid d-block m-auto pb-2" src="{% static 'images/wad-logo-blue.jpg' %}" width="72" height="72">-->
 
-    
-                    <form method="get">
-                        <p class="lead"><h5>Search a workout created by one of our users or <a href="{% url 'workitout:create-workout' %}" >create your own!</a></h5></p>
-                        <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
-                    </form>
-				</div>
+                <form method="get">
+                    <p class="lead"><h5>Search a workout created by one of our users or <a href="{% url 'workitout:create-workout' %}" >create your own!</a></h5></p>
+                    <input type="text" class="form-control" name="q" id="id_q" placeholder="Search...">
+                </form>
+            </div>
 			<!---</div>-->
 
             </br>
 
             {% if workouts %}
 
-                    {% for wo in workouts %}
-                        
+                {% for wo in workouts %}
 
-                            <div class="card m-auto d-flex flex-column p-3 bg-info">
-                                {% include 'workitout/snippets/workout_snippet.html' with workout=wo %}
-                            </div>
-                                
-                        </a>      
-                    </br> 
-                    {% endfor %}
+
+                    <a href="{% url 'workitout:workout_page' creator=wo.creator workout_id=wo.id  %}">
+
+                        <div class="card m-auto d-flex flex-column p-3 bg-info">
+                            {% include 'workitout/snippets/workout_snippet.html' with workout=wo %}
+                        </div>
+                            
+                    </a>      
+                </br> 
+                {% endfor %}
 
             {% else %}
             
@@ -106,24 +139,26 @@
 
         </div>
 
+   
 
-        <!-- Extra functinoality here, perhaps javascript?-->
-        <div class="m-2 col-sm  rounded bg-info border border-white">
+        <!-- Map container starts here-->
+        <div class="card-container-map m-2 col-sm rounded bg-info border border-dark">
 
-        </br>
+            </br>
+            <div class="card m-auto d-flex flex-column p-2 border border-dark">
+                <p class="lead"><h5>Search for local Gyms, Fitness Centres and Leisure CLubs near you!</h5></p>
+            </div>
+            </br>
 
-            <div class="mb-3 rounded">
-                
-                <!--Add code here-->
-                
 
-
-			</div>
+            <!--Wjere the map will appear-->
+            <div class ="card-map m-auto d-flex flex-column rounded p-1 border border-white" id="map"></div>
 
         </div>
 
+
         <!-- Extra functinoality here, maybe some links to a social media feed/forum?-->
-        <div class="m-2 col-sm  rounded bg-dark border border-white">
+        <div class="card-container m-2 col-sm  rounded bg-dark border border-white">
 
         </br>
 
@@ -136,21 +171,6 @@
 
         </div>
         
-
-        <!-- Add interactive js map here-->
-        <div class="m-2 col-sm  rounded bg-white border border-dark">
-
-        </br>
-
-            <div class="mb-3 rounded">
-                
-                <!--Add code here-->
-
-			</div>
-
-        </div>
-
-
     </div>
 
 </div>
@@ -161,11 +181,23 @@
     document.getElementById("id_q").value = "{{query}}"
 </script>
 
+<script>
+    var map;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: -34.397, lng: 150.644},
+        zoom: 8
+        });
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+async defer></script>
+
 
 {% endblock %}
 
 <!--
 col-lg-7 offset-lg-1
-
 workout-post-container m-auto d-flex flex-column p-3
 -->

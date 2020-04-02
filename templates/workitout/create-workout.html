@@ -16,24 +16,24 @@
                 {% endfor %} 
 
                 {% for field in form.visible_fields %} 
-                    {{ field.errors }}  
 
+                    {{ field.errors }}  
+    
                     <div class="form-group">
                         <label>{{ field.help_text }}</label>
                         <div class="form-control">{{ field }}</div>
                     </div>
-
-                {% endfor %} 
+                    
+                {% endfor %}
+                
+                <button class="btn btn-success" type="button" onclick="window.open('/workitout/create-workout/add-exercise','_blank')">Add Exercise</button>
+                
+                <!--<button class="btn btn-primary" onclick="">Create Workout</button>-->
                 <input type="submit" name="submit" value="Create Workout" />
 
             </form>
         </div>
 	</div>
 </div>
-
-
-
-
-
 
 {%  endblock %}
