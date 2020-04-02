@@ -338,6 +338,28 @@ class LikeWorkoutView(View):
             workout.save()
             return HttpResponse(len(workout.likes.all()))
 
+class DeleteWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        workout_id = request.GET['workout_id']
+    
+        try:
+            workout = Workout.objects.get(id=workout_id)
+            ex_list= ExInWorkout.objects.filter(workout=workout)
+            
+        except Workout.DoesNotExist:
+            return HttpResponse(-1)
+        except ExInWorkout.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        for e in ex_list:
+            e.delete()
+        workout.delete()
+        return HttpResponse(1)
+        
+
 class FollowUserView(View):
     @method_decorator(login_required)
     def get(self, request):

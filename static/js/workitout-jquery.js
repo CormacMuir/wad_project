@@ -1,4 +1,4 @@
-//put any jscript you want for project in here, i've loaded this file in base.html already - Cormac
+
 
 //show second image on hover over
 var sourceSwap = function () {

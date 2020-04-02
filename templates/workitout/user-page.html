@@ -7,6 +7,7 @@
 {% block body_block %}
 
 <style type="text/css">
+    
 	.card{
 		max-width: 700px;
 	}
@@ -61,6 +62,7 @@
 
                         {% if self_view is True %}
                             <button id="edit_btn" class="btn btn-primary btn-sm" type="button">
+                                <span data-feather="edit"></span>
                                 <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
                             </button>
                         {%endif%}
@@ -87,9 +89,16 @@
                                                 </br>
                                                     <th>Duration: {{workout.duration}}</th>
                                                     <th>Likes: {{workout.numLikes}}</th>
-                                                </tr>                                        
+                                                </tr>  
+                                                <br></br>
+                                            </a>
+                                                            
+                                                <button id="delete_btn"  data-workoutid="{{workout.id}}" class="btn btn-danger btn-sm" type="button">
+                                                    <span data-feather="trash-2"></span>
+                                                    Delete Workout
+                                                </button>                       
                                         </div>
-                                    </a>
+                                    
                                 
                                 {% endfor %}
                                                         
