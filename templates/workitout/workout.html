@@ -20,9 +20,112 @@
 </style>
 
 <div class="container">
+    <div class="row">
+
+        <div class="card m-auto">
+
+                
+                <img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
+
+                <div class="card-body mt-2 mb-2">
+                    <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ workout.title }}</h1>
+
+                </br>
+
+                    <div class="card-subtitle mb-2 text-muted">
+                        <h6>
+                            Difficulty : <Strong>{{ workout.difficulty }}</Strong> <br/>
+                            Duration : <strong>{{ workout.duration }}</Strong> <br/>
+                            <strong id="like_count">{{likes}}</strong> users like this workout.
+                        </h6>
+
+                        </br>
+
+                        {% if user.is_authenticated %}
+
+                            <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                                <span data-feather="thumbs-up"></span>
+                                Like Workout
+                            </button>
+                
+                            <button id="unlike_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                                <span data-feather="thumbs-down"></span>
+                                Unlike Workout
+                            </button>
+                                
+                        
+                            <div id="success_save" class="alert alert-success" role="alert">
+                            </div>
+                
+                            <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                                <span data-feather="save"></span>
+                                Save Workout
+                            </button>
+                            <button id="unsave_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                                <span data-feather="x-square"></span>
+                                Unsave Workout
+                            </button>
+                
+                        {% endif %}
+                    </div>
+
+                </br>
+
+                    <div> 
+                        <h5>{{workout.description}}</h5>
+                    </div>
+      
+                </br>
+                    
+                <div class="card-columns">
+        
+                    {% for ex in exercises %}
+            
+                            <a href="/workitout/exercise/{{ ex.slug }}/">
+            
+                                <!--Put snippet here--
+                                {% include 'workitout/snippets/exercise_snippet.html' with exercise=ex %}-->
+                                <div class="card">
+                                    <img class="card-img-top"  src="{% static ex.image1 %}" data-alt-src="{% static ex.image2 %}" alt="Card image cap">
+                        
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ex.title}}</h5>
+                                        <p class="card-text"> Targets {{ex.muscle_group}} </p>
+                                        <p class="card-text">Difficulty : {{ex.difficulty}}</p>           
+                                        
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <p>Sets : </p>
+                                        <p>Reps : </p>
+                                    </div>
+                                </div>
+            
+                            </a>
+            
+                    {% endfor %}
+            
+                </div>
+
+                
+
+                <div class="card-footer text-muted">
+			        Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>
+			    </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!--
+<div class="container">
 	<div class="row">
 
-		<!-- Blog Post -->
+		
 		<div class="card m-auto">
 			<img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
 			<div class="card-body mt-2 mb-2">
@@ -32,6 +135,10 @@
                   Difficulty : {{ workout.difficulty }} <br/>
                   Duration : {{ workout.duration }} <br/>
                   <strong id="like_count">{{likes}}</strong> users like this workout.
+                </h6>
+            </br>
+
+        <tr>
          {% if user.is_authenticated %}
             
                   <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
@@ -69,6 +176,18 @@
                   {{workout.description}}
               </div>
 
+              !-- Show exercises here--
+              <div class="row">
+
+                {%for ex in exercises %}
+                    {{ex}}
+                {%endfor%}
+
+
+              </div>
+
+
+
 			  <p class = "blue" >{{ tags }} 
 
 			</div>
@@ -79,6 +198,6 @@
 
 	</div>
 </div>
-
+-->
 
 {% endblock %}

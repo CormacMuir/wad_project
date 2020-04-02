@@ -438,6 +438,10 @@ def exercise_page(request, exercise_title_slug):
 
 
 def workout_page(request, workout_id,creator):
+
+    ex_in_workout = []
+
+
     context_dict = {}
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
@@ -463,8 +467,37 @@ def workout_page(request, workout_id,creator):
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
 
+        '''
         exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
         context_dict['exercises'] = exercises
+        '''
+
+        # > marty new code here
+
+        #  for each exerciseInWorkout object in the workout
+        for exInWo in ExInWorkout.objects.filter(workout=workout):
+
+            # for each exercise in e-i-w set
+            for ex in Exercise.objects.filter(title=exInWo.exercise.title):
+                
+                # add the exercise to the list
+                ex_in_workout.append(ex)
+            
+        for ex in ex_in_workout:
+        
+            ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
+            ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+
+            
+        # add the exercises to the context
+        context_dict['exercises'] = ex_in_workout
+
+        '''
+        However by doing this i dont know how to get sets and reps back through 
+        i could query again, then loop through ex_in_workout then add them as attributes
+        the same as the ex.image above, but im sure theres an easier way
+        its now 9:10 am, im going to bed
+        '''
 
         
     except Workout.DoesNotExist:
