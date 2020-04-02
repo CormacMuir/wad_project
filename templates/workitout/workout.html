@@ -119,7 +119,7 @@ Completed this workout? Share on twitter!<br>
                                     <img class="card-img-top"  src="{% static ex.image1 %}" data-alt-src="{% static ex.image2 %}" alt="Card image cap">
                         
                                     <div class="card-body">
-                                        <h5 class="card-title">{{ex.title}}</h5>
+                                        <h5 class="card-title">{{ex.exercise.title}}</h5>
                                         <p class="card-text"> Targets: {{ex.exercise.muscle_group}} </p>
                                         <p class="card-text">Difficulty : 
                                           {%if ex.exercise.difficulty == 1 %}

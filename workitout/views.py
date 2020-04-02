@@ -194,11 +194,11 @@ def user_page(request, user_name):
 
         context_dict['userProfile'] = user1
         context_dict['profile_username'] = user_obj.username
-        try:
-            context_dict['picture'] = user1.picture
-        except user1.picture.DoesNotExist:
-            #context_dict_dict['picture'] = None
+        if user1.picture=='':
             context_dict['picture'] = None
+        else:
+            context_dict['picture']=user1.picture
+        
 
         context_dict['bio'] = user1.bio
         context_dict['following'] = len(user1.following.all())
