@@ -45,6 +45,8 @@
               <a class="p-2 text-dark" href="{% url 'workitout:search' %}">Search</a>
               <a class="p-2 text-dark" href="{% url 'workitout:create-workout' %}">Create Workout</a>
               <a class="p-2 text-dark" href="{% url 'workitout:exercises' %}">Exercises</a>
+              <a class="p-2 text-dark" href="{% url 'workitout:workouts' %}">Workouts</a>
+
             </nav>
 
             {% if user.is_authenticated %}

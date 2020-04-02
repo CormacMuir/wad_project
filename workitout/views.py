@@ -29,9 +29,9 @@ def home(request):
         context_dict['query'] = str(query)
 
     # queries and returns the newest first
-    workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
+    #workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
     context_dict['randvar'] = True
-    context_dict['workouts'] = workout_list
+    context_dict['workouts'] = Workout.objects.all()
     context_dict['username'] = request.user.username
     return render(request, 'workitout/home.html', context_dict)
 
@@ -326,6 +326,107 @@ def get_exercise_queryset(query=None, filters={}):
 
 
 
+
+
+
+def workouts(request):
+
+    context_dict={}
+
+    query = ""
+    filters  = {'tag':"", 'equipment':"", 'diff':"", 'dur':0}
+    if request.GET:
+        request_parameters = request.GET
+
+        query = request_parameters.get('workout_q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+        filters['tag'] = request_parameters.get('tag',"")
+        filters['equipment'] = request_parameters.get('equipment',"")
+        filters['diff'] = request_parameters.get('diff',"")
+        filters['duration'] = request_parameters.get('duration', 0)
+
+    
+    workout_list, filter_objs = get_workout_queryset(query, filters)
+    context_dict['filter_objs'] = filter_objs
+
+    if filters['tag'] != "":
+        context_dict['tag_filter'] = filter_objs['tag_filter']
+
+    if filters['equipment'] != "":
+        context_dict['eq_filter'] = filter_objs['eq_filter']
+
+    if filters['diff'] != "":
+        context_dict['diff_filter'] = filters['diff']
+
+    if filters['dur'] != 0:
+        context_dict['dur_filter'] = filters['dur']
+
+
+    
+    
+    context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
+    context_dict['workouts'] = workout_list
+    context_dict['equipment'] = Equipment.objects.all().order_by('name')
+    context_dict['tags'] = Tag.objects.all().order_by('name')
+    context_dict['difficulties'] =  ["beginner", "intermediate", "advanced"]
+
+
+
+
+    return render(request, 'workitout/workouts.html', context_dict)
+
+
+def get_workout_queryset(query=None, filters={}):
+
+    filter_objs = {}
+
+    queries = query.split(" ")
+    queryset = Workout.objects.filter( Q(title__icontains=queries[0]) )
+    for query in queries:
+        queryset = queryset.intersection(Workout.objects.filter( Q(title__icontains=query) ))
+    
+    try:
+        t = Tag.objects.get(name=filters['tag'])
+        filter_objs['tag_filter']= t
+        qs1 = Workout.objects.filter(tags__in=[t])
+        queryset = queryset.intersection(qs1)
+    except Tag.DoesNotExist:
+        pass
+    
+    try:
+        eq = Equipment.objects.get(slug=filters['equipment'])
+        filter_objs['eq_filter']= eq
+        qs3 = Workout.objects.filter(equipment__in=[eq])
+        queryset = queryset.intersection(qs3)
+    except Equipment.DoesNotExist:
+        pass
+
+    if filters['diff'] != "":
+        diffs = {"beginner":1, "intermediate":2, "advanced":3}
+        qs4 = Workout.objects.filter(difficulty=diffs[filters['diff']])
+        queryset = queryset.intersection(qs4)
+
+    if filters['dur'] != 0:
+        
+        qs4 = Workout.objects.filter(duration__lte=filters['dur'])
+        queryset = queryset.intersection(qs4)
+
+    
+
+
+    return list(set(queryset)), filter_objs
+
+
+
+
+
+
+
+
+
+
 class LikeWorkoutView(View):
     @method_decorator(login_required)
     def get(self, request):
@@ -484,23 +585,5 @@ def workout_page(request, workout_id,creator):
 
     return render(request, 'workitout/workout.html', context=context_dict)
 
-
-def get_workout_queryset(query=None):
-
-    queryset = []
-
-    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
-
-    for q in queries:
-        posts = Workout.objects.filter( 
-            Q(title__icontains=q) | 
-            Q(description__icontains=q) 
-            ).distinct()
-        for post in posts:
-            queryset.append(post)
-
-    # create unique set and then convert to list
-
-    return list(set(queryset)) 
 
 
