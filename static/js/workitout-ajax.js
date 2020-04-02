@@ -16,7 +16,7 @@ $(document).ready(function() {
         workoutIdVar = $(this).attr('data-workoutid');
         userIdVar = $(this).attr('data-userid');
         likeVar = true;
-        Console.log("check here")
+        
         $.get('/workitout/like_workout',
             {'workout_id': workoutIdVar,'user_id':userIdVar,'like':likeVar},
             function(data) {
