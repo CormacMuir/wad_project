@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
+from django.contrib.staticfiles import finders
 
 from workitout.forms import CreateWorkoutForm, AddExerciseForm
 
@@ -330,7 +331,8 @@ class LikeWorkoutView(View):
 
         
         if toLike=="true":
-            workout.likes.add(User.objects.get(id=user_id))        
+            workout.likes.add(User.objects.get(id=user_id))    
+               
             workout.save()
             return HttpResponse(len(workout.likes.all()))
         else:
@@ -489,39 +491,41 @@ def workout_page(request, workout_id,creator):
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
 
-        '''
-        exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
-        context_dict['exercises'] = exercises
-        '''
 
-        # > marty new code here
+        
 
-        #  for each exerciseInWorkout object in the workout
-        for exInWo in ExInWorkout.objects.filter(workout=workout):
-
-            # for each exercise in e-i-w set
-            for ex in Exercise.objects.filter(title=exInWo.exercise.title):
+        exercises_temp = [(exiw.exercise, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        
+        class exercise_obj:
+            def __init__(self, exercise, sets,reps):
+                self.exercise=exercise
+                self.sets=sets
+                self.reps=reps
                 
-                # add the exercise to the list
-                ex_in_workout.append(ex)
+
+
+        exercises=[]
+        for e in exercises_temp:
+            ex=exercise_obj(e[0],e[1],e[2])
+            ex.steps=ex.exercise.description.steps.split('$$')
+            ex.tips=ex.exercise.description.tips.split('$$')
             
-        for ex in ex_in_workout:
-        
-            ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
-            ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+            if finders.find("images\\exercises\\" + ex.exercise.slug + "-1.png")==None:
+                ex.image1="images\\image_not_found.png"
+            else:
+                ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
 
-            
-        # add the exercises to the context
-        context_dict['exercises'] = ex_in_workout
+            if finders.find("images\\exercises\\" + ex.exercise.slug + "-2.png")==None:
+                 ex.image2 ="images\\image_not_found.png"
+            else:
+                ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
+            exercises.append(ex)
 
-        '''
-        However by doing this i dont know how to get sets and reps back through 
-        i could query again, then loop through ex_in_workout then add them as attributes
-        the same as the ex.image above, but im sure theres an easier way
-        its now 9:10 am, im going to bed
-        '''
 
-        
+        context_dict['exercises'] = exercises
+        context_dict['ex_num']=len(exercises_temp)
+
+
     except Workout.DoesNotExist:
         context_dict['workout'] = None
 
