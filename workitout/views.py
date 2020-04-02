@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
+from django.contrib.staticfiles import finders
 
 from workitout.forms import CreateWorkoutForm
 from django.db.models import Q
@@ -232,7 +233,8 @@ class LikeWorkoutView(View):
 
         
         if toLike=="true":
-            workout.likes.add(User.objects.get(id=user_id))        
+            workout.likes.add(User.objects.get(id=user_id))    
+               
             workout.save()
             return HttpResponse(len(workout.likes.all()))
         else:
@@ -381,8 +383,18 @@ def workout_page(request, workout_id,creator):
         exercises=[]
         for e in exercises_temp:
             ex=exercise_obj(e[0],e[1],e[2])
-            ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
-            ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
+            ex.steps=ex.exercise.description.steps.split('$$')
+            ex.tips=ex.exercise.description.tips.split('$$')
+            
+            if finders.find("images\\exercises\\" + ex.exercise.slug + "-1.png")==None:
+                ex.image1="images\\image_not_found.png"
+            else:
+                ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
+
+            if finders.find("images\\exercises\\" + ex.exercise.slug + "-2.png")==None:
+                 ex.image2 ="images\\image_not_found.png"
+            else:
+                ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
             exercises.append(ex)
 
 
@@ -394,6 +406,9 @@ def workout_page(request, workout_id,creator):
         context_dict['workout'] = None
 
     return render(request, 'workitout/workout.html', context=context_dict)
+
+
+
 
 
 def get_exercise_queryset(query=None):

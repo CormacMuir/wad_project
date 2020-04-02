@@ -10,6 +10,7 @@
     <i data-feather="check-circle"></i>
     {% endif %}</h1>
 {% if self_view is True %}
+<a class="btn btn-outline-primary"  href="{% url 'auth_password_change' %}">Change Password</a> 
 <button id="edit_btn" class="btn btn-primary btn-sm" type="button">
     <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit</a>
     

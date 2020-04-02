@@ -6,13 +6,18 @@
 
 {% block body_block %}
 
+{%if workout.isPrivate%}
+Sorry! This workout is private
+{%else%}
 <style type="text/css">
 	
-    .col-md-4 img{
-        max-width: 20%;
-        display: block; 
-    }
-    
+  #ex_header {
+    display:table;
+    margin:auto; /* if you want header be center in it's parent */
+}
+  #ex_header div {
+    display:table-cell;
+}
     .card{
 		max-width: 700px;
         color:steelblue;
@@ -24,87 +29,153 @@
         color:rgb(0, 153, 255);
     }
 </style>
+Completed this workout? Share on twitter!<br>
+  <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Just%20completed%20a%20workout%20by%20%22TheChadinator%22%20Come%20check%20it%20out"
+  data-size="large" data-hashtags="WorkItOut">Tweet</a>
 
 <div class="container">
 	<div class="row">
 
 		<!-- Blog Post -->
 		<div class="card m-auto">
+      <div align="center"><h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ workout.title }}</h1></div>
+      <div class="card-body mt-2 mb-2">
+        <h5 class="card-title">{{workout.description}}</h5>
+          
+        
+      </div>
 			<img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
 			<div class="card-body mt-2 mb-2">
 
-              <h1 id="like_start"class="card-title"data-liked={{has_liked}} data-isSaved={{is_saved}}>{{ workout.title }}</h1>
+              
               <h6 class="card-subtitle mb-2 text-muted">
-                  Difficulty : {{ workout.difficulty }} <br/>
-                  Duration : {{ workout.duration }} <br/>
-                  <strong id="like_count">{{likes}}</strong> users like this workout.
-                </div>
-         {% if user.is_authenticated %}
+                  <b>Difficulty : </b>
+                  {%if workout.difficulty == 1 %}
+                  <span class="badge badge-pill badge-success">Easy</a></span>
+                  {%elif workout.difficulty == 2 %}
+                  <span class="badge badge-pill badge-warning">Medium</a></span>
+                  {%else%}
+                  <span class="badge badge-pill badge-danger">Hard</a></span>
+                  {%endif%}
                   
-                  <div>
-                  <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                  
+                  <br/>
+
+
+                  
+                  <b>Difficulty : </b> {{ workout.duration }} minutes 
+                </h6>
+
+                
+                </div>
+         
+
+              
+              
+              
+            
+
+              <p > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%} <br>
+                {% if user.is_authenticated %}
+                  
+                  <div align="right">
+                  <button id="like_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-lg" type="button">
                       <span data-feather="thumbs-up"></span>
                       Like Workout
+                      <span id="like_count" class="badge badge-primary">{{likes}}</span>
                   </button>
               
-                  <button id="unlike_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                  <button id="unlike_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-lg" type="button">
                       <span data-feather="thumbs-down"></span>
                       Unlike Workout
+                      <span id="like_count" class="badge badge-primary" >{{likes}}</span>
                   </button>
-  
+                
           
           
               
-                  <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                  <button id="save_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-lg" type="button">
                       <span data-feather="save"></span>
                       Save Workout
                   </button>
-                  <button id="unsave_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-sm" type="button">
+                  <button id="unsave_btn"  data-workoutid="{{ workout.id }}" data-userid="{{ user.id }}"class="btn btn-primary btn-lg" type="button">
                       <span data-feather="x-square"></span>
                       Unsave Workout
                   </button>
                   <div id="success_save" class="alert alert-success" role="alert">
                   </div>
-              
+                
           {% endif %}
-
-              </h6>
-
-              <div class="card-body mt-2 mb-2">
-                  {{workout.description}}
-              </div>
-
-              <p class = "blue" > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%}
-                <div align="right"><p><u>Completed this workout? Share on twitter!</u></p>
-                <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Hello%20world"
-    data-size="large">Tweet</a>
+               
 </div>
-			</div>
+			
 			<div class="card-footer text-muted">
 			  Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>
-			</div>
+            </div>
+            
         </div>
-        
+	</div>
+      
 
 	</div>
 </div>
+</div>
+
 <h1>Exercises <span class="badge badge-secondary">{{ex_num}}</span></h1>
 {%for ex in exercises%}
-<div id="ex_card" class="card mb-3" style="max-width: 100%;">
+<div class="container-fluid">
+
+<div class="card mb-3" style="max-width: 100%;">
     <div class="row no-gutters">
       <div class="col-md-4">
-        <img src="{% static ex.image1 %}" class="card-img">
+        <img src="{% static ex.image1 %}" class="card-img"style="max-width: 40%;">
+        
       </div>
       <div class="col-md-8">
         <div class="card-body">
-          <h5 class="card-title">{{ex.exercise.title}}</h5>
-          <p class="card-text">{{ex.exercise.description.primer}}</p>
+          
+          
+          
+
+          <header id="ex_header">
+            <div>
+              <h3 class="card-title"><span class="badge badge-pill badge-primary">Exercise:</span>&nbsp{{ex.exercise.title}} &nbsp</h3>
+            </div>
+            <div>
+              <h3 class="card-title"><span class="badge badge-pill badge-primary">Sets:</span> {{ex.sets}}&nbsp</h3>
+            </div>
+            <div>
+              <h3 class="card-title"><span class="badge badge-pill badge-primary">Reps:</span> {{ex.reps}}</h3>
+            </div>
+        </header>
+
+
+
+
+
+          <div class="alert alert-secondary" role="alert">
+            {{ex.exercise.description.primer}}
+          </div>
+          
+          {%for t in ex.tips %}
+          {{t}}
+          {%endfor%}
+
+
+          <ul class="list-group list-group-flush">
+            
+            {%for s in ex.steps %}
+            <li class="list-group-item">{{s}}</li>
+          {%endfor%}
+          </ul>
+          
           
         </div>
       </div>
     </div>
     
   </div>
-  
+</div>
 {%endfor%}
+{%endif%}
 {% endblock %}
