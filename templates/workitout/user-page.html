@@ -31,14 +31,16 @@
 
                     {%if picture %}
                         <img class="card-img-top" id="follow_start" data-isFollowing={{isFollower}} src="{{ userProfile.picture.url }}" alt="profile picture" >
-                    {% endif %}
+                    {%else%}
+                        <img class="card-img-top" id="follow_start" data-isFollowing={{isFollower}} src="{% static 'images/default_user.png' %}" alt="profile picture" >
+                    {%endif%}
 
                     <h6 class="card-subtitle mb-2 text-muted">
                         
                     </h6>
 
                     <div class="card-body mt-2 mb-2">
-                        <h2 class="card-title">{{profile_username}}</h2>
+                        <h2 class="card-title">{{profile_username}}{%if verified%}&nbsp;<span data-feather="check-circle"></span>{%endif%}</h2>
 
                         <p>
                             <strong id="following_count">{{ following }}</strong> following
@@ -93,11 +95,12 @@
                                                 </tr>  
                                                 <br></br>
                                             </a>
-                                                            
+                                            {% if self_view %}          
                                                 <button id="delete_w_button"  data-workoutid="{{workout.id}}" class="btn btn-danger btn-sm" type="button">
                                                     <span data-feather="trash-2"></span>
                                                     Delete Workout
-                                                </button>                       
+                                                </button>     
+                                                {%endif%}                  
                                         </div>
                                     
                                 
