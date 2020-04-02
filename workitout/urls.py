@@ -12,6 +12,7 @@ urlpatterns = [
     path('about',views.about,name='about'),
     path('exercises',views.exercises,name='exercises'),
     path('exercise/<slug:exercise_title_slug>/',views.exercise_page, name='exercise_page'),
+    path('exercises',views.exercises,name='exercises'),
     path('workout/<creator>/<workout_id>/',views.workout_page, name='workout_page'),
     path('like_workout/', views.LikeWorkoutView.as_view(), name='like_workout'),
     path('follow_user/', views.FollowUserView.as_view(), name='follow_user'),

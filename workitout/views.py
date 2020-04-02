@@ -237,7 +237,7 @@ def exercises(request):
     context_dict={}
 
     query = ""
-    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':""}
+    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':"", 'diff':""}
     if request.GET:
         request_parameters = request.GET
 
@@ -247,6 +247,8 @@ def exercises(request):
         filters['muscle_group'] = request_parameters.get('muscle_group',"")
         filters['equipment'] = request_parameters.get('equipment',"")
         filters['ex_type'] = request_parameters.get('ex_type',"")
+        filters['diff'] = request_parameters.get('diff',"")
+
     
     exercise_list, filter_objs = get_exercise_queryset(query, filters)
     context_dict['filter_objs'] = filter_objs
@@ -260,6 +262,9 @@ def exercises(request):
     if filters['ex_type'] != "":
         context_dict['t_filter'] = filter_objs['t_filter']
 
+    if filters['diff'] != "":
+        context_dict['diff_filter'] = filters['diff']
+
     for ex in exercise_list:
         
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
@@ -272,6 +277,7 @@ def exercises(request):
     context_dict['exercises'] = exercise_list
     context_dict['equipment'] = Equipment.objects.all().order_by('name')
     context_dict['muscle_groups'] = MuscleGroup.objects.all().order_by('name')
+    context_dict['difficulties'] =  ["beginner", "intermediate", "advanced"]
     context_dict['ex_type'] = ["push", "pull", "upper", "lower"]
 
     return render(request, 'workitout/exercises.html', context_dict)
@@ -309,6 +315,12 @@ def get_exercise_queryset(query=None, filters={}):
         queryset = queryset.intersection(qs4)
     except Tag.DoesNotExist:
         pass
+
+    if filters['diff'] != "":
+        diffs = {"beginner":1, "intermediate":2, "advanced":3}
+        qs4 = Exercise.objects.filter(difficulty=diffs[filters['diff']])
+        queryset = queryset.intersection(qs4)
+
 
     return list(set(queryset)), filter_objs
 
