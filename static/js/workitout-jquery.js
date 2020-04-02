@@ -1,3 +1,4 @@
+$('.alert').alert('close')
 
 var sourceSwap = function () {
     var $this = $(this);
