@@ -140,9 +140,20 @@
 
 {% else %}
 
-    <div>
-        No workouts
-    </div>
+<div class="card-columns m-5">
+        
+    {% for workout in workouts %}
+
+            <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
+
+                <!--Put snippet here-->
+                {% include 'workitout/snippets/workout_snippet.html' %}
+
+            </a>
+
+    {% endfor %}
+
+</div>
 
 
 {% endif %}

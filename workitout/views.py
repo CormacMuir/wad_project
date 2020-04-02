@@ -326,9 +326,6 @@ def get_exercise_queryset(query=None, filters={}):
 
 
 
-
-
-
 def workouts(request):
 
     context_dict={}
@@ -419,9 +416,46 @@ def get_workout_queryset(query=None, filters={}):
     return list(set(queryset)), filter_objs
 
 
+def users(request):
+
+    context_dict={}
+
+    query = ""
+    verified = False
+    if request.GET:
+        request_parameters = request.GET
+        query = request_parameters.get('user_q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+
+        if 'verified' in request_parameters.keys():
+            verified = True
+            context_dict['ver_filter'] = verified
+
+    user_list = get_user_queryset(query, verified)
+
+    context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
+    context_dict['users'] = user_list
+    context_dict['user_profiles'] = UserProfile.objects.filter(user__in=user_list)
+
+    return render(request, 'workitout/users.html', context_dict)
 
 
+def get_user_queryset(query=None, verified=False):
+    
+    queryset = User.objects.filter(Q(username__icontains=query))
 
+    user_profiles = UserProfile.objects.filter(user__in=queryset)
+
+    queryset = list(queryset)
+
+    for user_p in user_profiles:
+        if verified:
+            if not user_p.isVerified:
+                queryset.remove(user_p.user)
+
+    return list(set(queryset))
 
 
 
