@@ -6,12 +6,14 @@
 
 {% block body_block %}
 <div class="container">
+   
     <form method="post" enctype="multipart/form-data">
         {%csrf_token%}
         {{form.as_p}}
         {{profile_form.as_p}}
-        <button type="submit">Submit</button> 
+        <button type="submit">Done</button> 
     </form>
+    
 </div>
 
 {% endblock %}

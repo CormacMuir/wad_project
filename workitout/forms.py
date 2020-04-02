@@ -44,7 +44,7 @@ class AddExerciseForm(forms.ModelForm):
 
 
 class EditProfileForm(UserChangeForm):
-
+    password = None
     class Meta:
         model = User
         fields=(

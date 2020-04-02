@@ -5,72 +5,249 @@
 {% endblock %}
 
 {% block body_block %}
+
+
+<style type="text/css">
+    
+	.card{
+		max-width: 700px;
+	}
+	.container{
+		padding:20px;
+	}
+</style>
+
 {% if userProfile %}
-<h1 id="follow_start" data-isFollowing={{isFollower}} >{{profile_username}}</h1>
-{% if self_view is True %}
-<button id="edit_btn" class="btn btn-primary btn-sm" type="button">
-    <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit</a>
-    
-</button>
-{%endif%}
-{%if picture %}
-<img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
-{% endif %}
-{% if private and self_view is False %}
-    This profile is private.
+    <div class="container">
+        <div class="row">
+
+            <!-- Blog Post -->
+            <div class="card m-auto">
+
+                {% if private and self_view is False %}
+                    This profile is private.
+
+                {% else %} 
+
+                    {%if picture %}
+                        <img class="card-img-top" id="follow_start" data-isFollowing={{isFollower}} src="{{ userProfile.picture.url }}" alt="profile picture" >
+                    {% endif %}
+
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        
+                    </h6>
+
+                    <div class="card-body mt-2 mb-2">
+                        <h2 class="card-title">{{profile_username}}</h2>
+
+                        <p>
+                            <strong id="following_count">{{ following }}</strong> following
+                            <strong id="follow_count">{{ followers }}</strong> followers
+
+                            {% if user.is_authenticated %}
+                                {% if self_view is False %}        
+                                    <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
+                                        <span data-feather="user-check"></span>
+                                        Follow
+                                    </button>
+                                
+                                    <button id="unfollow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
+                                        <span data-feather="user-x"></span>
+                                        Unfollow 
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                        </p>
+
+                        <p class="card-text">{{bio}}</p>
+
+                        {% if self_view is True %}
+                            <button id="edit_btn" class="btn btn-primary btn-sm" type="button">
+                                <span data-feather="edit"></span>
+                                <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                            </button>
+                        {%endif%}
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                          <div class="card m-1">
+
+                            <div class="card-header">
+                                Created Workouts
+                            </div>
+
+                            {% if created %}
+                                
+                                {% for workout in created %}
+                                
+                                    <a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">
+
+                                        <div class="card-body">        
+                                                <tr>
+                                                    <th>{{workout.title}}</th>
+                                                </br>
+                                                    
+                                                    <th>Likes: {{workout.numLikes}}</th>
+                                                </tr>  
+                                                <br></br>
+                                            </a>
+                                                            
+                                                <button id="delete_w_button"  data-workoutid="{{workout.id}}" class="btn btn-danger btn-sm" type="button">
+                                                    <span data-feather="trash-2"></span>
+                                                    Delete Workout
+                                                </button>                       
+                                        </div>
+                                    
+                                
+                                {% endfor %}
+                                                        
+                            {% else %}
+                                <div class="card-body"> User has no saved workouts </div>
+                            {% endif %}
+
+                            
+                          </div>
+                        </div>
+
+
+                        <div class="col-sm-6">
+                          <div class="card m-1">
+
+                            <div class="card-header">
+                                Saved Workouts
+                            </div>
+                            <!--
+                            <div class="card-body">
+                              <h5 class="card-title">Special title treatment</h5>
+                              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                              <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+                        -->
+
+                            {% if saved %}
+                                
+                                {% for workout in saved %}
+                                
+                                    <a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">
+
+                                        <div class="card-body">        
+                                                <tr>
+                                                    <th>{{workout.title}}</th>
+                                                </br>
+                                                    
+                                                    <th>Likes: {{workout.numLikes}}</th>
+                                                </tr>                                        
+                                        </div>
+                                    </a>
+                                
+                                {% endfor %}
+                                                        
+                            {% else %}
+                                <div class="card-body"> User has no saved workouts </div>
+                            {% endif %}
+
+
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </br>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
 {% else %}
-{{bio}}
 
-<div>
-    <strong id="following_count">{{ following }}</strong> following
-    <strong id="follow_count">{{ followers }}</strong> followers
-    {% if user.is_authenticated %}
-    {% if self_view is False %}        
-            <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
-                <span data-feather="user-check"></span>
-                Follow
-            </button>
-        
-            <button id="unfollow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
-                <span data-feather="user-x"></span>
-                Unfollow 
-            </button>
+    <div class="container">
+        <div class="row">
+            <div class="card m-auto">
+                User not found
+            </div>
+        </div>
+    </div>
 
-    {% endif %}
-    {% endif %}
-</div>
-
-{% if verified %}
-This user is verified
 {% endif %}
 
-<div>
-    <h2>Saved Workouts</h2>
-    {% if saved %}
+
+<!---
+{% if userProfile %}
+    <h1 id="follow_start" data-isFollowing={{isFollower}} >{{profile_username}}</h1>
+    {% if self_view is True %}
+        <button id="edit_btn" class="btn btn-primary btn-sm" type="button">
+            <a href="{% url 'workitout:edit_profile' %}" class="btn btn-primary">Edit</a>
     
+        </button>
+    {%endif%}
+
+    {%if picture %}
+        <img src="{{ userProfile.picture.url }}" alt="profile picture" height="90 " width="90">
+    {% endif %}
+
+    {% if private and self_view is False %}
+        This profile is private.
+    {% else %}  
+        {{bio}}
+
+        <div>
+            <strong id="following_count">{{ following }}</strong> following
+            <strong id="follow_count">{{ followers }}</strong> followers
+            {% if user.is_authenticated %}
+                {% if self_view is False %}        
+                        <button id="follow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
+                            <span data-feather="user-check"></span>
+                            Follow
+                    </button>
+                
+                    <button id="unfollow_btn"  data-followerid="{{ current_user.id }}" data-userid="{{ userProfile.id }}"class="btn btn-primary btn-sm" type="button">
+                        <span data-feather="user-x"></span>
+                        Unfollow 
+                    </button>
+
+                {% endif %}
+            {% endif %}
+        </div>
     
-        <table style="width:80%" id="frontTab">
-            <tr>
-                <th>Workout Name</th>
-                <th>Duration</th>
-                <th>Likes</th>
-              </tr>
-            {% for workout in saved %}
-            <tr>
-                <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
-                <th>{{workout.duration}}</th>
-                <th>{{workout.numLikes}}</th>
-            </tr>
-            {% endfor %}
+
+        {% if verified %}
+            This user is verified
+        {% else%}
+            tHis user is nt verified
+        {% endif %}
+
+    <div>
+
+        <h2>Saved Workouts</h2>
+
+        {% if saved %}
+            <table style="width:80%" id="frontTab">
+                <tr>
+                    <th>Workout Name</th>
+                    <th>Duration</th>
+                    <th>Likes</th>
+                </tr>
+
+                {% for workout in saved %}
+                <tr>
+                    <th><a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">{{workout.title}}</a></th>
+                    <th>{{workout.duration}}</th>
+                    <th>{{workout.numLikes}}</th>
+                </tr>
+                {% endfor %}
+            </table>
         {% else %}
-        User has no saved workouts
+            User has no saved workouts
         {% endif %}
     </div>
 
     <div>
         <h2>Created Workouts</h2>
         {% if created %}
-        
         
             <table style="width:80%" id="frontTab">
                 <tr>
@@ -84,14 +261,24 @@ This user is verified
                     <th>{{workout.duration}}</th>
                     <th>{{workout.numLikes}}</th>
                 </tr>
+
                 {% endfor %}
+
+            </table>
             {% else %}
             User has not created any workouts
             {% endif %}
         </div>
 
+    </br>
+</br>
+</br>
+</br>
+</br>
+</br>
 {% endif %}
 {% else %}
-User not found
-{% endif %}
+    User not found
+{% endif %} -->
+
 {% endblock %}
