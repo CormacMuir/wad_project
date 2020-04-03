@@ -13,7 +13,7 @@
 </style>
 
 {% if workout %}
-<a href="{% url 'workitout:workout_page' workout.creator workout.id  %}">
+<a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
     <div class="card m-2">
 
         <img class="card-img-top" src="{% static 'images/wad-logo-blue.jpg' %}">
@@ -26,7 +26,7 @@
         </div>
 
         <div class="card-footer text-muted">
-        Posted on {{workout.date_published}} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>
+        Posted on {{workout.date_published}} by <a href="/workitout/user/{{ workout.creator }}/">{{workout.creator}}</a>
         </div>
     </div>
 

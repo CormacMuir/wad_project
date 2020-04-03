@@ -3,3 +3,46 @@
 {% block title_block %}
     Search
 {% endblock %}
+
+{% block body_block %}
+<style>
+
+    .card-img-top{
+        width: 60px;
+    }
+</style>
+
+
+<div class = "container">
+    Verified Creators:
+    <div class="row">
+        {% for user in top_users %}
+        <a href="/workitout/user/{{ user.username }}/">
+            {% include 'workitout/snippets/user_snippet.html' with user=user %}
+        </a>
+        {% endfor %}
+    </div>
+
+    <button onclick="window.location.href = 'users';">Search All Users</button>
+    Top Workouts:
+    <div class="row">
+
+        {% for workout in top_workouts %}
+        <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
+            {% include 'workitout/snippets/workout_snippet.html' with workout=workout %}
+        </a>
+        {% endfor %}
+    </div>
+    <button onclick="window.location.href = 'workouts';">Search All Workouts</button>
+    Popular Exercises:
+    <div class="row">
+    {% for exercise in top_exercises %}
+    <a href="/workitout/exercise/{{ ex.slug }}/">
+        {% include 'workitout/snippets/exercise_snippet.html' with exercise=exercise %}
+    </a>
+    {% endfor %}
+    </div>
+    <button onclick="window.location.href = 'exercises';">Search All Exercises</button>
+</div>
+{% endblock %}
+
