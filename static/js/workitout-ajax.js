@@ -140,6 +140,12 @@ $(document).ready(function() {
             }
     });
 
+    $('#addex_btn').click(function() {
+        $('#exercise_load').html("massivetest");
+
+
+    });
+
 
 
 
