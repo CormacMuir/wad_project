@@ -36,7 +36,7 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 SECRET_KEY = 'e&%6@4ulxu*r)ocg!6(q9!#6$(q09xlra#@b2#204jpo$xsx-*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['workitout.pythonanywhere.com','127.0.0.1']
 
