@@ -53,25 +53,25 @@ def create_workout(request):
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
-        obj = form.save(commit=False)
-        obj.creator = user
-    
         workout_list = Workout.objects.order_by("creator")
         maxID = 0
-        has_created = False
-
         for workout in workout_list:
             if workout.creator == user:
-                has_created = True
                 if workout.id > maxID:
                     maxID = workout.id
-
-        obj.workout = Workout.objects.get(id=(maxID))
-        obj.id = maxID
-        obj.save(update_fields=['title','description','isPrivate'])
-        
-        form = CreateWorkoutForm()
-        return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+        workout = Workout.objects.get(id=(maxID))
+        exercises = [(exiw.exercise.title) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        if len(exercises) >= 2:
+            obj = form.save(commit=False)
+            obj.creator = user
+            obj.workout = workout
+            obj.id = maxID
+            obj.save(update_fields=['title','description','isPrivate'])
+            
+            form = CreateWorkoutForm()
+            return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+        else:
+            context['error'] = True
     else:
         obj = form.save(commit=False)
         obj.creator = user
@@ -126,7 +126,7 @@ def search(request):
     context_dict['randvar'] = True
 
     top_users = [up.user for up in UserProfile.objects.filter(isVerified=True)]
-    print(top_users)
+    
     if len(top_users) >= 5:
         context_dict['top_users'] = random.sample(top_users, 5)
     else:
@@ -647,7 +647,7 @@ def workout_page(request, workout_id,creator):
         if request.user.is_authenticated:
             currentProfile = UserProfile.objects.get(user=request.user)
             if workout in currentProfile.saved.all():
-                print("in here")
+                
                 context_dict['is_saved'] = True
             else:
                 context_dict['is_saved'] = False
