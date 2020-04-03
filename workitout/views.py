@@ -706,15 +706,8 @@ def workout_page(request, workout_id,creator):
             ex.steps=ex.exercise.description.steps.split('$$')
             ex.tips=ex.exercise.description.tips.split('$$')
             
-            if finders.find("images\\exercises\\" + ex.exercise.slug + "-1.png")==None:
-                ex.image1="images\\image_not_found.png"
-            else:
-                ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
-
-            if finders.find("images\\exercises\\" + ex.exercise.slug + "-2.png")==None:
-                 ex.image2 ="images\\image_not_found.png"
-            else:
-                ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
+            ex.image1="images\\exercises\\" + ex.exercise.slug + "-1.png"
+            ex.image2="images\\exercises\\" + ex.exercise.slug + "-2.png"
             exercises.append(ex)
 
 
