@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
+from django.contrib.staticfiles import finders
 
 from workitout.forms import CreateWorkoutForm, AddExerciseForm
 
@@ -193,11 +194,11 @@ def user_page(request, user_name):
 
         context_dict['userProfile'] = user1
         context_dict['profile_username'] = user_obj.username
-        try:
-            context_dict['picture'] = user1.picture
-        except user1.picture.DoesNotExist:
-            #context_dict_dict['picture'] = None
+        if user1.picture=='':
             context_dict['picture'] = None
+        else:
+            context_dict['picture']=user1.picture
+        
 
         context_dict['bio'] = user1.bio
         context_dict['following'] = len(user1.following.all())
@@ -443,13 +444,36 @@ class LikeWorkoutView(View):
 
         
         if toLike=="true":
-            workout.likes.add(User.objects.get(id=user_id))        
+            workout.likes.add(User.objects.get(id=user_id))    
+               
             workout.save()
             return HttpResponse(len(workout.likes.all()))
         else:
             workout.likes.remove(User.objects.get(id=user_id))        
             workout.save()
             return HttpResponse(len(workout.likes.all()))
+
+class DeleteWorkoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        workout_id = request.GET['workout_id']
+    
+        try:
+            workout = Workout.objects.get(id=workout_id)
+            ex_list= ExInWorkout.objects.filter(workout=workout)
+            
+        except Workout.DoesNotExist:
+            return HttpResponse(-1)
+        except ExInWorkout.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        for e in ex_list:
+            e.delete()
+        workout.delete()
+        return HttpResponse(1)
+        
 
 class FollowUserView(View):
     @method_decorator(login_required)
@@ -551,6 +575,10 @@ def exercise_page(request, exercise_title_slug):
 
 
 def workout_page(request, workout_id,creator):
+
+    ex_in_workout = []
+
+
     context_dict = {}
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
@@ -576,10 +604,41 @@ def workout_page(request, workout_id,creator):
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
 
-        exercises = [(exiw.exercise.title, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
-        context_dict['exercises'] = exercises
 
         
+
+        exercises_temp = [(exiw.exercise, exiw.sets, exiw.reps) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        
+        class exercise_obj:
+            def __init__(self, exercise, sets,reps):
+                self.exercise=exercise
+                self.sets=sets
+                self.reps=reps
+                
+
+
+        exercises=[]
+        for e in exercises_temp:
+            ex=exercise_obj(e[0],e[1],e[2])
+            ex.steps=ex.exercise.description.steps.split('$$')
+            ex.tips=ex.exercise.description.tips.split('$$')
+            
+            if finders.find("images\\exercises\\" + ex.exercise.slug + "-1.png")==None:
+                ex.image1="images\\image_not_found.png"
+            else:
+                ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
+
+            if finders.find("images\\exercises\\" + ex.exercise.slug + "-2.png")==None:
+                 ex.image2 ="images\\image_not_found.png"
+            else:
+                ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
+            exercises.append(ex)
+
+
+        context_dict['exercises'] = exercises
+        context_dict['ex_num']=len(exercises_temp)
+
+
     except Workout.DoesNotExist:
         context_dict['workout'] = None
 
