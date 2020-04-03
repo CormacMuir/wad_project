@@ -51,60 +51,67 @@
 
 
 </style>
-
-<div class="card m-5 mx-auto">
-    <form id="user_search", type='GET', action='/workitout/users'>
-        <div class="row" >
-            <div class="search-bar m-3">
-                    <p><h4>Search Users</h4></p>
-                    <input type="text" class="form-control" name="user_q" id="user_q" placeholder="Search...">
+<div class="container">
+    <div class="card-columns m-5">
+        <form id="user_search", type='GET', action='/workitout/users'>
+            <div class="row" >
+                <div class="search-bar m-3">
+                        <p><h4>Search Users</h4></p>
+                        <input type="text" class="form-control" name="user_q" id="user_q" placeholder="Search...">
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label class= rd-btn-label>
-                <input type="radio" id="verified" name="verified" value="verified">Verified Users
-            </label>
-        </div>
-        <input class=sbm-btn type="submit" value="Filter">
-    </form>
+            <div class="row">
+                <label class= rd-btn-label>
+                    <input type="radio" id="verified" name="verified" value="verified">Verified Users
+                </label>
+            </div>
+            <input class=sbm-btn type="submit" value="Filter">
+            <input class=sbm-btn type="reset" value="Reset">
+
+        </form>
+    </div>
 </div>
 
-{% if users %}
-
+<div class="container">
+    {% if users %}
+        <div class="card-columns m-5">
+            {% for user in users %}
+                    <a href="/workitout/user/{{ user.username }}/">
+                        {% include 'workitout/snippets/user_snippet.html' %}
+                    </a>
+            {% endfor %}
+        </div>
+    {% else %}
     <div class="card-columns m-5">
-        
-        {% for user in users %}
-
-                <a href="/workitout/user/{{ user.username }}/">
-
-                    <!--Put snippet here-->
-                    {% include 'workitout/snippets/user_snippet.html' %}
-
-                </a>
-
-        {% endfor %}
-
+        <h2 class="card-title">No Results for</h2>
+            {% if  ver_filter %}
+            <p class="card-text">status: Verified
+            {% endif %}
+            {% if  query %}
+            <p class="card-text">search: {{query}}
+            {% endif %}
     </div>
-
-{% else %}
-
-    <div>
-        No users
-    </div>
-
-
-{% endif %}
+    {% endif %}
+</div>
 
 
 
-<!--Java script to help with the search function-->
-{% if query %}
+    <!--Java script to help with the search function-->
+    {% if query %}
+        <script type="text/javascript">
+
+            document.getElementById("user_q").value = "{{query}}"
+
+        </script>
+    {% endif %}
+
+    {% if ver_filter %}
     <script type="text/javascript">
 
-        document.getElementById("id_q").value = "{{query}}"
+        document.getElementById("verified").checked = true;
 
     </script>
-{% endif %}
+    {% endif %}
 
 
 

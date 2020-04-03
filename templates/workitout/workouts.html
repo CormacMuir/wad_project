@@ -51,124 +51,118 @@
 
 
 </style>
-
-<div class="card m-5 mx-auto">
-    <form id="workout_search", type='GET', action='/workitout/workouts'>
-        <div class="row" >
-            <div class="search-bar m-3">
-                    <p><h4>Search Workouts or Creator</h4></p>
-                    <input type="text" class="form-control" name="workout_q" id="workout_q" placeholder="Search...">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                <button class="btn btn-default dropdown-toggle" type="button" id="tag-dropdown" data-toggle="dropdown">
-                    <label for="tag-dropdown">Workout Tags</label><br>
-                    <span class="caret"></span></button>
-                </button>
-                <ul class="dropdown-menu scrollable-menu allow-focus">
-                    {% for tag in tags %}
-                        <li class=rd-btn>
-                            <label class= rd-btn-label>
-                                <input type="radio" id="{{ tag.name }}" name="tag" value="{{ tag }}">{{ tag.name|title }}
-                            </label>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="col-sm">
-                <button class="btn btn-default dropdown-toggle" type="button" id="eq-dropdown" data-toggle="dropdown">
-                    <label for="eq-dropdown">Equipment</label><br>
-                    <span class="caret"></span></button>
-                </button>
-                <ul class="dropdown-menu scrollable-menu allow-focus">
-                    {% for eq in equipment %}
-                        <li class=rd-btn>
-                            <label class= rd-btn-label>
-                                <input type="radio" id="{{ eq.slug }}" name="equipment" value="{{ eq.slug }}">{{ eq.name|title }}
-                            </label>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <div class="col-sm">
-                <button class="btn btn-default dropdown-toggle" type="button" id="d-dropdown" data-toggle="dropdown">
-                    <label for="d-dropdown">Difficulty</label><br>
-                    <span class="caret"></span></button>
-                </button>
-                <ul class="dropdown-menu scrollable-menu allow-focus">
-                    {% for diff in difficulties %}
-                        <li class=rd-btn>
-                            <label class= rd-btn-label>
-                                <input type="radio" id="{{ diff }}" name="diff" value="{{ diff }}">{{ diff|title }}
-                            </label>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-        <div class="row" >
-            <div class="search-bar m-3">
-                    <p><h4>Max duration</h4></p>
-                    <input type="number" step=5 class="form-control" name="duration" id="duration" placeholder="Enter duration in mins">
-            </div>
-        </div>
-
-        </div>
-        <input class=sbm-btn type="submit" value="Filter">
-    </form>
-</div>
-
-{% if workouts %}
-
+<div class=container>
     <div class="card-columns m-5">
-        
-        {% for workout in workouts %}
+        <form id="workout_search", type='GET', action='/workitout/workouts'>
+            <div class="row" >
+                <div class="search-bar m-3">
+                        <p><h4>Search Workouts</h4></p>
+                        <input type="text" class="form-control" name="workout_q" id="workout_q" placeholder="Search...">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="tag-dropdown" data-toggle="dropdown">
+                        <label for="tag-dropdown">Workout Tags</label><br>
+                        <span class="caret"></span></button>
+                    </button>
+                    <ul class="dropdown-menu scrollable-menu allow-focus">
+                        {% for tag in tags %}
+                            <li class=rd-btn>
+                                <label class= rd-btn-label>
+                                    <input type="radio" id="{{ tag.name }}" name="tag" value="{{ tag }}">{{ tag.name|title }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
+                <div class="col-sm">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="eq-dropdown" data-toggle="dropdown">
+                        <label for="eq-dropdown">Equipment</label><br>
+                        <span class="caret"></span></button>
+                    </button>
+                    <ul class="dropdown-menu scrollable-menu allow-focus">
+                        {% for eq in equipment %}
+                            <li class=rd-btn>
+                                <label class= rd-btn-label>
+                                    <input type="radio" id="{{ eq.slug }}" name="equipment" value="{{ eq.slug }}">{{ eq.name|title }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="col-sm">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="d-dropdown" data-toggle="dropdown">
+                        <label for="d-dropdown">Difficulty</label><br>
+                        <span class="caret"></span></button>
+                    </button>
+                    <ul class="dropdown-menu scrollable-menu allow-focus">
+                        {% for diff in difficulties %}
+                            <li class=rd-btn>
+                                <label class= rd-btn-label>
+                                    <input type="radio" id="{{ diff }}" name="diff" value="{{ diff }}">{{ diff|title }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                    <!--Put snippet here-->
-                    {% include 'workitout/snippets/workout_snippet.html' %}
+            <div class="row" >
+                <div class="search-bar m-3">
+                        <p><h4>Max duration</h4></p>
+                        <input type="number" step=5 class="form-control" name="duration" id="duration" placeholder="Enter duration in mins">
+                </div>
+            </div>
 
-                </a>
 
-        {% endfor %}
+            <input class=sbm-btn type="submit" value="Filter">
+            <input class=sbm-btn type="reset" value="Reset">
 
+        </form>
     </div>
-
-{% else %}
-
-<div class="card-columns m-5">
-        
-    {% for workout in workouts %}
-
-            <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
-
-                <!--Put snippet here-->
-                {% include 'workitout/snippets/workout_snippet.html' %}
-
-            </a>
-
-    {% endfor %}
-
 </div>
-
-
-{% endif %}
-
+<div class="container">
+    {% if workouts %}
+        <div class="card-columns m-5">
+            {% for workout in workouts %}
+                    <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
+                        {% include 'workitout/snippets/workout_snippet.html' %}
+                    </a>
+            {% endfor %}
+        </div>
+    {% else %}
+    <div class="card-columns m-5">
+        <h2 class="card-title">No Results for</h2>
+            {% if  query %}
+            <p class="card-text">search: {{query}}
+            {% endif %}
+            {% if  mg_filter %}
+            <p class="card-text">Tags: {{ tag_filter.name|title }}</p>
+            {% endif %}
+            {% if  eq_filter %}
+            <p class="card-text">Equipment: {{ eq_filter.name|title }}</p>
+            {% endif %}
+            {% if  t_filter %}
+            <p class="card-text">Difficulty: {{ diff_filter }}</p>
+            {% endif %}
+            {% if  dur_filter %}
+            <p class="card-text">Max Duration: {{ dur_filter}} mins</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
 
 
 <!--Java script to help with the search function-->
 {% if query %}
     <script type="text/javascript">
 
-        document.getElementById("id_q").value = "{{query}}"
+        document.getElementById("workout_q").value = "{{query}}"
 
     </script>
 {% endif %}
-
-
 
 {% endblock %}

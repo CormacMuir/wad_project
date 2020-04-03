@@ -37,7 +37,7 @@
     Popular Exercises:
     <div class="row">
     {% for exercise in top_exercises %}
-    <a href="/workitout/exercise/{{ ex.slug }}/">
+    <a href="/workitout/exercise/{{ exercise.slug }}">
         {% include 'workitout/snippets/exercise_snippet.html' with exercise=exercise %}
     </a>
     {% endfor %}

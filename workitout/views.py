@@ -78,6 +78,7 @@ def create_workout(request):
         obj.save()
     context['form'] = form
 
+
     return render(request, 'workitout/create-workout.html', context)
 
 def add_exercise(request):
@@ -368,7 +369,7 @@ def workouts(request):
         filters['tag'] = request_parameters.get('tag',"")
         filters['equipment'] = request_parameters.get('equipment',"")
         filters['diff'] = request_parameters.get('diff',"")
-        filters['duration'] = request_parameters.get('duration', 0)
+        filters['dur'] = request_parameters.get('duration', 0)
 
     
     workout_list, filter_objs = get_workout_queryset(query, filters)
@@ -384,6 +385,7 @@ def workouts(request):
         context_dict['diff_filter'] = filters['diff']
 
     if filters['dur'] != 0:
+        print(filters['dur'])
         context_dict['dur_filter'] = filters['dur']
 
 
@@ -663,6 +665,8 @@ def workout_page(request, workout_id,creator):
         context_dict['creator'] = workout.creator.username
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
+        context_dict['equipment'] = [eq.name for eq in workout.equipment.all()]
+
 
 
         

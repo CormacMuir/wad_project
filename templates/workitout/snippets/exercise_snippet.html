@@ -22,36 +22,16 @@
             <div class="card-body">
                 <h5 class="card-title">{{exercise.title}}</h5>
                 <p class="card-text"> Targets {{exercise.muscle_group}} </p>
-                <p class="card-text">Difficulty Level {{exercise.difficulty}}</p>           
+                <b>Difficulty : </b>
+                {%if exercise.difficulty == 1 %}
+                <span class="badge badge-pill badge-success">Easy</a></span>
+                {%elif exercise.difficulty == 2 %}
+                <span class="badge badge-pill badge-warning">Medium</a></span>
+                {%else%}
+                <span class="badge badge-pill badge-danger">Hard</a></span>
+                {%endif%}         
                 <p class="card-text">{{exercise.description.primer}}</p>
             </div>
     </div>
-
-{% else %}
-<div class="container">
-    <div class="row">
-        <div class="card m-auto">
-            <div class="card-body mt-2 mb-2">
-                <h2 class="card-title">No Results for</h2>
-                    {% if  query %}
-                    <p class="card-text">search: {{query}}:
-                    {% endif %}
-                    {% if  mg_filter %}
-                    <p class="card-text">Muscle Group: {{ mg_filter.name|title }}</p>
-                    {% endif %}
-                    {% if  eq_filter %}
-                    <p class="card-text">Equipment: {{ eq_filter.name|title }}</p>
-                    {% endif %}
-                    {% if  t_filter %}
-                    <p class="card-text">Type: {{ t_filter.name|title }}</p>
-                    {% endif %}
-                    {% if  t_filter %}
-                    <p class="card-text">Difficulty: {{ d_filter }}</p>
-                    {% endif %}
-
-                </div>
-            </div>
-        </div>
-
 
 {% endif %}

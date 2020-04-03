@@ -59,14 +59,15 @@ Completed this workout? Share on twitter!<br>
                         
                         
                         <br/>
-      
-  
-                        
-                        <b>Duration : </b> {{ workout.duration }} minutes 
+    
+            
+                        <b>Duration : </b> {{ workout.duration }} minutes
                       </h6>
 
                         </br>
                         <p > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%} <br>
+                        <p > Equipment Needed: {%for eq in equipment%}<span class="badge badge-pill badge-primary">{{eq}}</span>{%endfor%} <br>
+                        
                           {% if user.is_authenticated %}
                             
                             <div align="left">
