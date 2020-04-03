@@ -8,9 +8,7 @@ Browse
 
 <Style>
         /* Carousel base class */
-    .carousel {
-    margin-bottom: 4rem;
-    }
+
 
     .carousel-caption {
     padding-bottom: 1rem;
@@ -42,6 +40,12 @@ Browse
     .marketing .col-lg-4 p {
     margin-right: .75rem;
     margin-left: .75rem;
+    }
+
+    .column {
+    float: left;
+    width: 30%;
+    padding: 3%;
     }
 
 
@@ -137,63 +141,54 @@ Browse
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
   
-    <div class="container">
-
-  
-        <hr class="featurette-divider">
-            <h2 class="featurette-heading">Featured Creators</h2><br>
-                <div class="row featurette">
-                    <div class="row">
-                        <div class="col-5">
-                            {% for user in top_users %}
-                            <a href="/workitout/user/{{ user.username }}/">
-                            {% include 'workitout/snippets/user_snippet.html' with user=user %}
-                            </a>
-                            {% endfor %}    
-                        </div>
-                    </div>
-                </div>
+  <div class="container">
+    <div class="row">
+      <div class="column">
+        <h3 class="featurette-heading">Featured Creators</h3><br>
+        <div class="row featurette">
+          <div class="row">
+            <div class="col">
+              {% for user in top_users %}
+              <a href="/workitout/user/{{ user.username }}/">
+              {% include 'workitout/snippets/user_snippet.html' with user=user %}
+              </a>
+              {% endfor %}    
             </div>
+          </div>
         </div>
-
-  
-        <hr class="featurette-divider">
-            <h2 class="featurette-heading">Popular Workouts</h2><br>
-                <div class="row featurette">
-                    <div class="row">
-                        <div class="col-5">
-                            {% for workout in top_workouts %}
-                            <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
-                            {% include 'workitout/snippets/workout_snippet.html' with workout=workout %}
-                        </a>
-                            {% endfor %}    
-                        </div>
-                    </div>
-                </div>
+      </div>
+      <div class="column">
+        <h3 class="featurette-heading">Popular Workouts</h3><br>
+        <div class="row featurette">
+          <div class="row">
+            <div class="col">
+              {% for workout in top_workouts %}
+              <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
+              {% include 'workitout/snippets/workout_snippet.html' with workout=workout %}
+              </a>
+              {% endfor %}    
             </div>
+          </div>
         </div>
-
-        <hr class="featurette-divider">
-            <h2 class="featurette-heading">Top Exercises</h2><br>
-                <div class="row featurette">
-                    <div class="row">
-                        <div class="col-5">
-                            {% for exercise in top_exercises %}
-                            <a href="/workitout/exercise/{{ exercise.slug }}">
-                            {% include 'workitout/snippets/exercise_snippet.html' with exercise=exercise %}
-                            </a>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+      </div>
+      <div class="column">
+        <h3 class="featurette-heading">Top Exercises</h3><br>
+          <div class="row featurette">
+            <div class="row">
+              <div class="col">
+                {% for exercise in top_exercises %}
+                <a href="/workitout/exercise/{{ exercise.slug }}">
+                {% include 'workitout/snippets/exercise_snippet.html' with exercise=exercise %}
+                </a>
+                {% endfor %}
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-  
-  
-
-  
-</div><!-- /.container -->
+  </div>
+</div>
   
   
     <!-- FOOTER -->
