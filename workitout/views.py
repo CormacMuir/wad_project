@@ -610,16 +610,29 @@ def exercise_page(request, exercise_title_slug):
         # parse exercise object and add individual fields to context dict
         context_dict['title'] = exercise.title
         
-        diff_dict = {1:'Easy', 2:'Medium', 3:'Hard'} #can change these
-        context_dict['difficulty'] = diff_dict[exercise.difficulty]
-
+        context_dict['difficulty'] = exercise.difficulty
         context_dict['primer'] = exercise.description.primer
-        context_dict['steps'] = exercise.description.steps.split('$$')
+        steps_list=exercise.description.steps.split('$$')
+        
+        class steps_obj:
+            def __init__(self, step,num):
+                self.step=step
+                self.num=num
+
+        steps_obj_list=[]
+        for i in range(len(steps_list)):
+            steps_obj_list.append(steps_obj(steps_list[i],i+1))
+
+        context_dict['steps'] = steps_obj_list
         context_dict['tips'] = exercise.description.tips.split('$$')
         if context_dict['tips'] == ['']:
             context_dict['tips'] = None
 
-        context_dict['muscle_group'] = exercise.muscle_group
+
+
+        mg = exercise.muscle_group.__str__()
+        
+        context_dict['muscle_group'] = mg.capitalize()
         context_dict['muscles'] = [m.name for m in exercise.muscles.all()]
         context_dict['tags'] = [t.name for t in exercise.tags.all()]
         context_dict['equipment'] = [e.name for e in exercise.equipment.all()]
