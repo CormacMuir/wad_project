@@ -115,7 +115,7 @@
                                 <!--Put snippet here--
                                 {% include 'workitout/snippets/exercise_snippet.html' with exercise=ex %}-->
                                 <div class="card">
-                                    <img class="card-img-top"  src="{% static ex.image1 %}" data-alt-src="{% static ex.image2 %}" alt="Card image cap">
+                                    <img class="card-img-top"  src="{% static ex.slug %}" data-alt-src="{% static ex.image2 %}" alt="Card image cap">
                         
                                     <div class="card-body">
                                         <h5 class="card-title">{{ex.exercise.title}}</h5>

@@ -375,7 +375,10 @@ def workouts(request):
         filters['tag'] = request_parameters.get('tag',"")
         filters['equipment'] = request_parameters.get('equipment',"")
         filters['diff'] = request_parameters.get('diff',"")
+    
         filters['dur'] = request_parameters.get('duration', 0)
+        if filters['dur'] == "":
+            filters['dur'] == 0
 
     
     workout_list, filter_objs = get_workout_queryset(query, filters)
@@ -391,7 +394,6 @@ def workouts(request):
         context_dict['diff_filter'] = filters['diff']
 
     if filters['dur'] != 0:
-        print(filters['dur'])
         context_dict['dur_filter'] = filters['dur']
 
 
@@ -440,8 +442,7 @@ def get_workout_queryset(query=None, filters={}):
         qs4 = Workout.objects.filter(difficulty=diffs[filters['diff']])
         queryset = queryset.intersection(qs4)
 
-    if filters['dur'] != 0:
-        
+    if type(filters['dur']) == type(1) and filters['dur'] != 0:
         qs4 = Workout.objects.filter(duration__lte=filters['dur'])
         queryset = queryset.intersection(qs4)
 

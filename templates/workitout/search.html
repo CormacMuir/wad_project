@@ -1,48 +1,207 @@
 {% extends 'workitout/base.html' %}
 {% load staticfiles %}
 {% block title_block %}
-    Search
+Browse
 {% endblock %}
 
 {% block body_block %}
-<style>
 
-    .card-img-top{
-        width: 60px;
+<Style>
+        /* Carousel base class */
+    .carousel {
+    margin-bottom: 4rem;
     }
-</style>
+
+    .carousel-caption {
+    padding-bottom: 1rem;
+    z-index: 10;
+    }
+
+    .carousel-item {
+    height: 12rem;
+    }
+    .carousel-item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 32rem;
+    }
+
+    .font-dark{
+        color: black;
+    }
+
+    .marketing .col-lg-4 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    }
+    .marketing h2 {
+    font-weight: 400;
+    }
+    .marketing .col-lg-4 p {
+    margin-right: .75rem;
+    margin-left: .75rem;
+    }
 
 
-<div class = "container">
-    Verified Creators:
-    <div class="row">
-        {% for user in top_users %}
-        <a href="/workitout/user/{{ user.username }}/">
-            {% include 'workitout/snippets/user_snippet.html' with user=user %}
-        </a>
-        {% endfor %}
+    /* Featurettes
+    ------------------------- */
+
+    .featurette-divider {
+    margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+    }
+
+    /* Thin out the marketing headings */
+    .featurette-heading {
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -.05rem;
+    }
+
+
+    /* RESPONSIVE CSS
+    -------------------------------------------------- */
+
+    @media (min-width: 40em) {
+    /* Bump up size of carousel content */
+    .carousel-caption p {
+        margin-bottom: 1.25rem;
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+
+    .featurette-heading {
+        font-size: 50px;
+    }
+    }
+
+    @media (min-width: 62em) {
+    .featurette-heading {
+        margin-top: 7rem;
+    }
+    }
+</Style>
+
+<main role="main">
+
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner background bg-info" >
+        <div class="carousel-item active">
+
+          <div class="container">
+            <div class="carousel-caption text-left">
+              <h2>Find your new inspiration today!</h2>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'workitout:users' %}" role="button">Search Creators</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          
+          <div class="container">
+            <div class="carousel-caption text-left">
+                
+              <h2>Browse Workouts and Save them to your profile for future use!</h2>    
+              <p><a class="btn btn-lg btn-primary" href="{% url 'workitout:workouts' %}" role="button">Search Workouts</a></p>
+
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          
+          <div class="container">
+            <div class="carousel-caption text-left">
+              <h2>Search for Specific Exercises to try out at home or the gym!</h2>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'workitout:exercises' %}" role="button">Search Exercises</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
     </div>
+  
+  
+    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+  
+    <div class="container">
 
-    <button onclick="window.location.href = 'users';">Search All Users</button>
-    Top Workouts:
-    <div class="row">
+  
+        <hr class="featurette-divider">
+            <h2 class="featurette-heading">Featured Creators</h2><br>
+                <div class="row featurette">
+                    <div class="row">
+                        <div class="col-5">
+                            {% for user in top_users %}
+                            <a href="/workitout/user/{{ user.username }}/">
+                            {% include 'workitout/snippets/user_snippet.html' with user=user %}
+                            </a>
+                            {% endfor %}    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        {% for workout in top_workouts %}
-        <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
-            {% include 'workitout/snippets/workout_snippet.html' with workout=workout %}
-        </a>
-        {% endfor %}
+  
+        <hr class="featurette-divider">
+            <h2 class="featurette-heading">Popular Workouts</h2><br>
+                <div class="row featurette">
+                    <div class="row">
+                        <div class="col-5">
+                            {% for workout in top_workouts %}
+                            <a href="/workitout/workout/{{ workout.creator }}/{{ workout.id }}/">
+                            {% include 'workitout/snippets/workout_snippet.html' with workout=workout %}
+                        </a>
+                            {% endfor %}    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+            <h2 class="featurette-heading">Top Exercises</h2><br>
+                <div class="row featurette">
+                    <div class="row">
+                        <div class="col-5">
+                            {% for exercise in top_exercises %}
+                            <a href="/workitout/exercise/{{ exercise.slug }}">
+                            {% include 'workitout/snippets/exercise_snippet.html' with exercise=exercise %}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <button onclick="window.location.href = 'workouts';">Search All Workouts</button>
-    Popular Exercises:
-    <div class="row">
-    {% for exercise in top_exercises %}
-    <a href="/workitout/exercise/{{ exercise.slug }}">
-        {% include 'workitout/snippets/exercise_snippet.html' with exercise=exercise %}
-    </a>
-    {% endfor %}
-    </div>
-    <button onclick="window.location.href = 'exercises';">Search All Exercises</button>
-</div>
+  
+  
+
+  
+</div><!-- /.container -->
+  
+  
+    <!-- FOOTER -->
+    <footer class="container">
+      <p class="float-right"><a href="#">Back to top</a></p>
+      <p>Lets get this bread and gainsz</p>
+    </footer>
+
+</main>
+
 {% endblock %}
-
