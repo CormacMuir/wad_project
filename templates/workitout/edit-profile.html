@@ -5,15 +5,80 @@
 {% endblock %}
 
 {% block body_block %}
-<div class="container">
-   
-    <form method="post" enctype="multipart/form-data">
-        {%csrf_token%}
-        {{form.as_p}}
-        {{profile_form.as_p}}
-        <button type="submit">Done</button> 
-    </form>
+<div class="container bg-white rounded border border-dark">
+   <div class="row">
+
+        <div class="col-lg-7 offset-lg-1">
+
+            <form class="create-form" method="post" enctype="multipart/form-data"> {%csrf_token%}
+                
+            </br>
+
+                <!--Email-->
+                <div class="form-group">
+					<label for="id_email">Email</label>
+                    <input class="form-control" type="email" name="email" id="email" placeholder="Email" value="{{form.email.value}}" required autofocus>
+                        
+                    </input>
+                </div>
+                
+                <!--Bio-->
+                <div class="form-group">
+					<label for="id_bio">Content</label>
+					<textarea class="form-control" rows="10" type="text" name="bio" id="id_bio" placeholder="This bio..." 
+					required>{{profile_form.bio.value}}</textarea>
+				</div>
+
+                <!--Image-->
+                <div class="form-group image-group" id="id_image_group">
+					<img class="img-fluid image" name="picture" src="{{profile_form.initial.picture.url}}" id="id_image_display">
+					  <div class="middle">
+                        Choose file
+					  </div>
+				</div>
+				<input type="file" name="picture" id="id_image_file" accept="image/*" onchange="readURL(this)">
+
+                    </br>
+                    </br>
+
+                    <p class="card background bg-info text-white">Do you wish your profile to be private? {{profile_form.isPrivate}}</p>
+
+                <!--Button-->
+                <button class="submit-button btn btn-info" type="submit">Done</button> 
+                </br>
+            </form>
+
+        </div>
+
+    </div>
     
 </div>
 
+
+<script type="text/javascript">
+	document.getElementById('id_image_group').onclick = function(event){
+    	document.getElementById('id_image_file').click();
+    };
+
+	function readURL(input){
+		var reader = new FileReader();
+		reader.onload = function (e) {
+            $('#id_image_display')
+                .attr('src', e.target.result)
+        };
+		reader.readAsDataURL(input.files[0]);
+	}
+</script>
+
 {% endblock %}
+
+<!-- #
+<p>Edit email: {{form.email}} </p>
+                <p>Ur bio sir: {{profile_form.bio}}</p>
+                <p>Ur image:L {{profile_form.picture}}</p>
+                <p>private? lol g{{profile_form.isPrivate}}</p>
+
+
+
+-->
+
