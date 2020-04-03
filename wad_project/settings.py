@@ -33,7 +33,7 @@ SECRET_KEY = 'e&%6@4ulxu*r)ocg!6(q9!#6$(q09xlra#@b2#204jpo$xsx-*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['workitout.pythonanywhere.com',]
 
 
 # Application definition
