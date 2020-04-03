@@ -24,12 +24,13 @@
 	<div class="row">
 
 		<div class="card m-auto">
+            <u><h1 align="center"class="card-title">{{ title }}</h1></u>
 			{% for image_path in image_paths %}
                 <img class="card-img-top" src="{% static image_path %}"  alt="exercise image"/>
             {% endfor %}
 			<div class="card-body mt-2 mb-2">
 
-                <h1 class="card-title">{{ title }}</h1>
+                
 
                 </br>
 
@@ -41,8 +42,14 @@
 
                 <div class="card-header">
                     Muscle Group : {{ muscle_group }} <br/>
-                    Target : {{ muscles }} </br>
-                    Difficulty : {{ difficulty }}
+                    Target : {%for m in muscles%}<span class="badge badge-pill badge-primary">{{m}}</span>{%endfor%} </br>
+                    Difficulty : {%if difficulty == 1 %}
+                        <span class="badge badge-pill badge-success">Easy</a></span>
+                        {%elif difficulty == 2 %}
+                        <span class="badge badge-pill badge-warning">Medium</a></span>
+                        {%else%}
+                        <span class="badge badge-pill badge-danger">Hard</a></span>
+                        {%endif%}
                   </div>
 			</div>
 
@@ -50,17 +57,18 @@
 
                 <li class="list-group-item">Follow These Steps :</li>
 
-                {% for step in steps %}
-                    <li class="list-group-item">{{step}}</li>
+                {% for s in steps %}
+                <li class="list-group-item"><span class="badge badge-pill badge-light">{{s.num}}</span>{{s.step}}</li>
                 {% endfor %}
 
             </ul>
 
             <div class="card-footer text-muted">
-                {{tags}} <br/>
+                Tags:{%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span> {%endfor%}<br/>
 
-                {% if equipment %}          
-                    You will need : {{ equipment }}
+                {% if equipment %}    
+                <br>      
+                    You will need : {%for e in equipment%}<span class="badge badge-pill badge-primary">{{e}}</span>{%endfor%}
                 {% else %}
                     No equipment is needed
                 {% endif %}
