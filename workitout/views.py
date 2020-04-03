@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
 from django.contrib.staticfiles import finders
+import random
 
 from workitout.forms import CreateWorkoutForm, AddExerciseForm
 
@@ -123,6 +124,31 @@ def search(request):
     context_dict = {}
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
+
+    top_users = [up.user for up in UserProfile.objects.filter(isVerified=True)]
+    print(top_users)
+    if len(top_users) >= 5:
+        context_dict['top_users'] = random.sample(top_users, 5)
+    else:
+        context_dict['top_users'] = top_users
+    context_dict['user_profiles'] = UserProfile.objects.filter(user__in=top_users)
+
+    top_workouts = Workout.objects.all().order_by('likes')
+    if len(top_workouts) >= 5:
+        context_dict['top_workouts'] = top_workouts[:5]
+    else:
+        context_dict['top_workouts'] = top_workouts
+
+    top_exercises = Exercise.objects.all().order_by('usage')
+    for ex in top_exercises:
+        
+        ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
+        ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+    if len(top_exercises) >= 5:
+        context_dict['top_exercises'] = top_exercises[:5]
+    else:
+        context_dict['top_exercises'] = top_exercises
+
     return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
@@ -327,9 +353,6 @@ def get_exercise_queryset(query=None, filters={}):
 
 
 
-
-
-
 def workouts(request):
 
     context_dict={}
@@ -420,9 +443,46 @@ def get_workout_queryset(query=None, filters={}):
     return list(set(queryset)), filter_objs
 
 
+def users(request):
+
+    context_dict={}
+
+    query = ""
+    verified = False
+    if request.GET:
+        request_parameters = request.GET
+        query = request_parameters.get('user_q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+
+        if 'verified' in request_parameters.keys():
+            verified = True
+            context_dict['ver_filter'] = verified
+
+    user_list = get_user_queryset(query, verified)
+
+    context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
+    context_dict['users'] = user_list
+    context_dict['user_profiles'] = UserProfile.objects.filter(user__in=user_list)
+
+    return render(request, 'workitout/users.html', context_dict)
 
 
+def get_user_queryset(query=None, verified=False):
+    
+    queryset = User.objects.filter(Q(username__icontains=query))
 
+    user_profiles = UserProfile.objects.filter(user__in=queryset)
+
+    queryset = list(queryset)
+
+    for user_p in user_profiles:
+        if verified:
+            if not user_p.isVerified:
+                queryset.remove(user_p.user)
+
+    return list(set(queryset))
 
 
 
