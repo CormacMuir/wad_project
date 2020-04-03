@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import json
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE','wad_project.settings')
