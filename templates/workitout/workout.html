@@ -18,9 +18,7 @@
         color:rgb(0, 153, 255);
     }
 </style>
-Completed this workout? Share on twitter!<br>
-  <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Just%20completed%20a%20workout%20by%20%22TheChadinator%22%20Come%20check%20it%20out"
-  data-size="large" data-hashtags="WorkItOut">Tweet</a>
+
 <div class="container">
     <div class="row">
 
@@ -144,7 +142,9 @@ Completed this workout? Share on twitter!<br>
             
                 </div>
 
-                
+                Completed this workout? Share on twitter!<br>
+  <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Just%20completed%20a%20workout%20by%20%22TheChadinator%22%20Come%20check%20it%20out"
+  data-size="large" data-hashtags="WorkItOut">Tweet</a>
 
                 <div class="card-footer text-muted">
 			        Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>

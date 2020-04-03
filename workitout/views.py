@@ -167,10 +167,15 @@ def edit_profile(request):
         profile_form=EditUserProfileForm(request.POST,request.FILES,instance=request.user.userprofile)
 
         if form.is_valid() and profile_form.is_valid():
-            user_form = form.save()
+            #user_form = form.save()
+
+            user_form = form.save(commit=False)
+            user_form.save()
+            
             profile = profile_form.save(commit=False)
             profile.user = user_form
             profile.save()
+            
             return redirect(reverse('workitout:user_page',args=[request.user.username]))
         
     else:
