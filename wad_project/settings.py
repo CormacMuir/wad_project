@@ -20,7 +20,11 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 # Path to static directory from STATIC_DIR
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATIC_ROOT = "/home/workitout/wad_project/static"
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 
 
