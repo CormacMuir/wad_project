@@ -55,6 +55,7 @@ class Exercise(models.Model):
     title = models.CharField(max_length=128)
     difficulty = models.IntegerField()
     description = models.OneToOneField(Description, on_delete=models.PROTECT)
+    usage = models.IntegerField(default=0)
     muscle_group = models.ForeignKey(MuscleGroup, on_delete=models.PROTECT)
     muscles = models.ManyToManyField(Muscle)
     tags = models.ManyToManyField(Tag)
@@ -121,6 +122,19 @@ def get_workout_attributes(sender, instance, **kwargs):
     workout.save()
 
 post_save.connect(get_workout_attributes, sender=ExInWorkout)
+
+
+def update_exercise_usage(sender, instance, **kwargs):
+    exercise = instance.exercise
+
+    total = len(Workout.objects.all())
+    ex_in = len(ExInWorkout.objects.filter(exercise=exercise))
+
+    exercise.usage=int(ex_in/total)
+    exercise.save()
+
+post_save.connect(update_exercise_usage, sender=ExInWorkout)
+
 
 
 

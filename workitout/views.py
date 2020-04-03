@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
+import random
 
 from workitout.forms import CreateWorkoutForm, AddExerciseForm
 
@@ -122,6 +123,31 @@ def search(request):
     context_dict = {}
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
+
+    top_users = [up.user for up in UserProfile.objects.filter(isVerified=True)]
+    print(top_users)
+    if len(top_users) >= 5:
+        context_dict['top_users'] = random.sample(top_users, 5)
+    else:
+        context_dict['top_users'] = top_users
+    context_dict['user_profiles'] = UserProfile.objects.filter(user__in=top_users)
+
+    top_workouts = Workout.objects.all().order_by('likes')
+    if len(top_workouts) >= 5:
+        context_dict['top_workouts'] = top_workouts[:5]
+    else:
+        context_dict['top_workouts'] = top_workouts
+
+    top_exercises = Exercise.objects.all().order_by('usage')
+    for ex in top_exercises:
+        
+        ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
+        ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+    if len(top_exercises) >= 5:
+        context_dict['top_exercises'] = top_exercises[:5]
+    else:
+        context_dict['top_exercises'] = top_exercises
+
     return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
