@@ -146,7 +146,7 @@ def populate_workouts():
     for i in range(numUsers):
         str_i=str(i)
        
-        temp=User.objects.get_or_create(username=('user'+str_i),email=('user'+str_i+'@mail.com'),password='easypass321')[0]
+        temp=User.objects.get_or_create(username=('user'+str_i),email=('user'+str_i+'@mail.com'),password='easypass321','picture':'profile_images/default_user.png')[0]
        
         UserProfile.objects.get_or_create(user=temp,bio='I love just being a generic user!')
         
