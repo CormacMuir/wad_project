@@ -64,8 +64,10 @@
                     {{ field.errors }}  
     
                     <div class="form-group">
+
                         <label class="blue">{{ field.help_text }}</label>
                         <div class="input">{{ field }}</div>
+
                     </div>
                     
                 {% endfor %}
@@ -74,6 +76,7 @@
                 <br> <br>
                 <button class="btn button_green" formaction='/workitout/create-workout'>Create Workout</button>
                 
+
 
             </form>
         </div>

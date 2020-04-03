@@ -18,9 +18,7 @@
         color:rgb(0, 153, 255);
     }
 </style>
-Completed this workout? Share on twitter!<br>
-  <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Just%20completed%20a%20workout%20by%20%22TheChadinator%22%20Come%20check%20it%20out"
-  data-size="large" data-hashtags="WorkItOut">Tweet</a>
+
 <div class="container">
     <div class="row">
 
@@ -50,23 +48,24 @@ Completed this workout? Share on twitter!<br>
                       <h6 class="card-subtitle mb-2 text-muted">
                         <b>Difficulty : </b>
                         {%if workout.difficulty == 1 %}
-                        <span class="badge badge-pill badge-success">Easy</a></span>
+                        <span class="badge badge-pill badge-success">Beginner</a></span>
                         {%elif workout.difficulty == 2 %}
-                        <span class="badge badge-pill badge-warning">Medium</a></span>
+                        <span class="badge badge-pill badge-warning">Intermediate</a></span>
                         {%else%}
-                        <span class="badge badge-pill badge-danger">Hard</a></span>
+                        <span class="badge badge-pill badge-danger">Advanced</a></span>
                         {%endif%}
                         
                         
                         <br/>
-      
-  
-                        
-                        <b>Duration : </b> {{ workout.duration }} minutes 
+    
+            
+                        <b>Duration : </b> {{ workout.duration }} minutes
                       </h6>
 
                         </br>
                         <p > Tags: {%for t in tags%}<span class="badge badge-pill badge-primary">{{t}}</span>{%endfor%} <br>
+                        <p > Equipment Needed: {%for eq in equipment%}<span class="badge badge-pill badge-primary">{{eq}}</span>{%endfor%} <br>
+                        
                           {% if user.is_authenticated %}
                             
                             <div align="left">
@@ -123,11 +122,11 @@ Completed this workout? Share on twitter!<br>
                                         <p class="card-text"> Targets: {{ex.exercise.muscle_group}} </p>
                                         <p class="card-text">Difficulty : 
                                           {%if ex.exercise.difficulty == 1 %}
-                                            <span class="badge badge-pill badge-success">Easy</a></span>
+                                            <span class="badge badge-pill badge-success">Beginner</a></span>
                                           {%elif ex.exercise.difficulty == 2 %}
-                                            <span class="badge badge-pill badge-warning">Medium</a></span>
+                                            <span class="badge badge-pill badge-warning">Intermediate</a></span>
                                           {%else%}
-                                            <span class="badge badge-pill badge-danger">Hard</a></span>
+                                            <span class="badge badge-pill badge-danger">Advanced</a></span>
                                           {%endif%}</p>           
                                         
                                     </div>
@@ -144,7 +143,9 @@ Completed this workout? Share on twitter!<br>
             
                 </div>
 
-                
+                Completed this workout? Share on twitter!<br>
+  <a class="twitter-share-button"href="https://twitter.com/intent/tweet?text=Just%20completed%20a%20workout%20by%20%22TheChadinator%22%20Come%20check%20it%20out"
+  data-size="large" data-hashtags="WorkItOut">Tweet</a>
 
                 <div class="card-footer text-muted">
 			        Created on {{ workout.date_published }} by <a href="{% url 'workitout:user_page' workout.creator.username %}" >{{workout.creator}}</a>

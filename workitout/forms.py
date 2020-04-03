@@ -13,7 +13,7 @@ class CreateWorkoutForm(forms.ModelForm):
 
     # user input
     title           = forms.CharField(max_length=128, help_text="Please enter the workout title.") 
-    description     = forms.CharField(required=False,max_length=5000, help_text="Please enter a description.") 
+    description     = forms.CharField(max_length=5000, help_text="Please enter a description.") 
     isPrivate       = forms.BooleanField(required=False, help_text="Do you want to make the workout private")
 
     # hidden fields 

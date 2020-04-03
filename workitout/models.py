@@ -55,6 +55,7 @@ class Exercise(models.Model):
     title = models.CharField(max_length=128)
     difficulty = models.IntegerField()
     description = models.OneToOneField(Description, on_delete=models.PROTECT)
+    usage = models.IntegerField(default=0)
     muscle_group = models.ForeignKey(MuscleGroup, on_delete=models.PROTECT)
     muscles = models.ManyToManyField(Muscle)
     tags = models.ManyToManyField(Tag)
@@ -80,6 +81,7 @@ class Workout(models.Model):
     duration = models.IntegerField(default=69)
     difficulty = models.IntegerField(default=1)
     likes = models.ManyToManyField(User, related_name='workout_likes')
+    equipment = models.ManyToManyField(Equipment)
     tags = models.ManyToManyField(Tag)
     isPrivate = models.BooleanField(default=False)
     slug=models.SlugField(unique=False)
@@ -107,19 +109,32 @@ def get_workout_attributes(sender, instance, **kwargs):
     workout = instance.workout
     exercises = [exiw.exercise for exiw in ExInWorkout.objects.filter(workout=workout)]
 
-    difficulty = 0.0
     for ex in exercises:
         tags = ex.tags.all()
         for tag in tags:
             workout.tags.add(tag)
-        difficulty += ex.difficulty
-    difficulty = difficulty/len(exercises)
-    difficulty = (difficulty - 0.5) * 4 # this makes the difficulty a score out of 10, can be changed
-
-    workout.difficulty = int(difficulty)
+        equipment = ex.equipment.all()
+        for eq in equipment:
+            workout.equipment.add(eq)
+        if ex.difficulty > workout.difficulty:
+            workout.difficulty = ex.difficulty
+    
     workout.save()
 
 post_save.connect(get_workout_attributes, sender=ExInWorkout)
+
+
+def update_exercise_usage(sender, instance, **kwargs):
+    exercise = instance.exercise
+
+    total = len(Workout.objects.all())
+    ex_in = len(ExInWorkout.objects.filter(exercise=exercise))
+
+    exercise.usage=int(ex_in/total)
+    exercise.save()
+
+post_save.connect(update_exercise_usage, sender=ExInWorkout)
+
 
 
 
@@ -128,8 +143,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # Additional attributes we wish to include
-    bio = models.TextField()
-    picture = models.ImageField(upload_to='profile_images', blank=True)
+    bio = models.TextField(blank=True)
+    picture = models.ImageField(upload_to='profile_images', default="profile_images/default_user.png")
     saved = models.ManyToManyField(Workout)
     followers = models.ManyToManyField(User, related_name='user_followers', blank=True)
     following = models.ManyToManyField(User, related_name='user_following', blank=True)

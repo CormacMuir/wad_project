@@ -21,7 +21,12 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 # Path to static directory from STATIC_DIR
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -33,7 +38,7 @@ SECRET_KEY = 'e&%6@4ulxu*r)ocg!6(q9!#6$(q09xlra#@b2#204jpo$xsx-*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['workitout.pythonanywhere.com','127.0.0.1']
 
 
 # Application definition
@@ -129,7 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 
-STATICFILES_DIRS = [STATIC_DIR, ]
+#STATICFILES_DIRS = [STATIC_DIR, ]
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = MEDIA_DIR

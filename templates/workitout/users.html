@@ -1,0 +1,118 @@
+{% extends 'workitout/base.html' %}
+{% load staticfiles %}
+{% block title_block %}
+    All Exercises
+{% endblock %}
+
+{% block body_block %}
+
+
+<style>
+    .search-bar{
+        color: rgb(82, 160, 196);
+        padding: 20px;
+        width: 90%;
+    }
+    .card-body{
+        padding: 20px;
+        width: 90%;
+    } 
+
+
+    .scrollable-menu {
+        height: auto;
+        max-height: 250px;
+        overflow-x: hidden;
+    }
+
+    .row{
+        padding: 10px;
+    }
+
+    .dropdown-toggle{
+        background-color: rgb(82, 160, 196);
+        width:200px;
+        height:40px;
+
+    }
+
+    .dropdown-menu{
+        width: 200px;
+    }
+
+    .sbm-btn{
+        width:80px;
+
+    }
+    .rd-btn:hover{
+        background-color: rgba(82, 160, 196, 0.6);
+
+    }
+
+
+</style>
+<div class="container">
+    <div class="card-columns m-5">
+        <form id="user_search", type='GET', action='/workitout/users'>
+            <div class="row" >
+                <div class="search-bar m-3">
+                        <p><h4>Search Users</h4></p>
+                        <input type="text" class="form-control" name="user_q" id="user_q" placeholder="Search...">
+                </div>
+            </div>
+            <div class="row">
+                <label class= rd-btn-label>
+                    <input type="radio" id="verified" name="verified" value="verified">Verified Users
+                </label>
+            </div>
+            <input class=sbm-btn type="submit" value="Filter">
+            <input class=sbm-btn type="reset" value="Reset">
+
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    {% if users %}
+        <div class="card-columns m-5">
+            {% for user in users %}
+                    <a href="/workitout/user/{{ user.username }}/">
+                        {% include 'workitout/snippets/user_snippet.html' %}
+                    </a>
+            {% endfor %}
+        </div>
+    {% else %}
+    <div class="card-columns m-5">
+        <h2 class="card-title">No Results for</h2>
+            {% if  ver_filter %}
+            <p class="card-text">status: Verified
+            {% endif %}
+            {% if  query %}
+            <p class="card-text">search: {{query}}
+            {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+
+
+    <!--Java script to help with the search function-->
+    {% if query %}
+        <script type="text/javascript">
+
+            document.getElementById("user_q").value = "{{query}}"
+
+        </script>
+    {% endif %}
+
+    {% if ver_filter %}
+    <script type="text/javascript">
+
+        document.getElementById("verified").checked = true;
+
+    </script>
+    {% endif %}
+
+
+
+{% endblock %}

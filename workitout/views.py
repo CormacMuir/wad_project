@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from django.views import View
 from django.contrib.staticfiles import finders
+import random
 
 from workitout.forms import CreateWorkoutForm, AddExerciseForm
 
@@ -30,9 +31,9 @@ def home(request):
         context_dict['query'] = str(query)
 
     # queries and returns the newest first
-    workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
+    #workout_list=sorted(get_workout_queryset(query), key=attrgetter('date_published'), reverse=True)
     context_dict['randvar'] = True
-    context_dict['workouts'] = workout_list
+    context_dict['workouts'] = Workout.objects.all()
     context_dict['username'] = request.user.username
     return render(request, 'workitout/home.html', context_dict)
 
@@ -52,30 +53,31 @@ def create_workout(request):
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
-        obj = form.save(commit=False)
-        obj.creator = user
-    
         workout_list = Workout.objects.order_by("creator")
         maxID = 0
-        has_created = False
-
         for workout in workout_list:
             if workout.creator == user:
-                has_created = True
                 if workout.id > maxID:
                     maxID = workout.id
-
-        obj.workout = Workout.objects.get(id=(maxID))
-        obj.id = maxID
-        obj.save(update_fields=['title','description','isPrivate'])
-        
-        form = CreateWorkoutForm()
-        return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+        workout = Workout.objects.get(id=(maxID))
+        exercises = [(exiw.exercise.title) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        if len(exercises) >= 2:
+            obj = form.save(commit=False)
+            obj.creator = user
+            obj.workout = workout
+            obj.id = maxID
+            obj.save(update_fields=['title','description','isPrivate'])
+            
+            form = CreateWorkoutForm()
+            return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+        else:
+            context['error'] = True
     else:
         obj = form.save(commit=False)
         obj.creator = user
         obj.save()
     context['form'] = form
+
 
     return render(request, 'workitout/create-workout.html', context)
 
@@ -123,6 +125,31 @@ def search(request):
     context_dict = {}
     context_dict['username'] = request.user.username
     context_dict['randvar'] = True
+
+    top_users = [up.user for up in UserProfile.objects.filter(isVerified=True)]
+    
+    if len(top_users) >= 5:
+        context_dict['top_users'] = random.sample(top_users, 5)
+    else:
+        context_dict['top_users'] = top_users
+    context_dict['user_profiles'] = UserProfile.objects.filter(user__in=top_users)
+
+    top_workouts = Workout.objects.all().order_by('likes')
+    if len(top_workouts) >= 5:
+        context_dict['top_workouts'] = top_workouts[:5]
+    else:
+        context_dict['top_workouts'] = top_workouts
+
+    top_exercises = Exercise.objects.all().order_by('usage')
+    for ex in top_exercises:
+        
+        ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
+        ex.image2 = "images\\exercises\\" + ex.slug + "-2.png"
+    if len(top_exercises) >= 5:
+        context_dict['top_exercises'] = top_exercises[:5]
+    else:
+        context_dict['top_exercises'] = top_exercises
+
     return render(request, 'workitout/search.html',context_dict)
 
 def about(request):
@@ -141,10 +168,15 @@ def edit_profile(request):
         profile_form=EditUserProfileForm(request.POST,request.FILES,instance=request.user.userprofile)
 
         if form.is_valid() and profile_form.is_valid():
-            user_form = form.save()
+            #user_form = form.save()
+
+            user_form = form.save(commit=False)
+            user_form.save()
+            
             profile = profile_form.save(commit=False)
             profile.user = user_form
             profile.save()
+            
             return redirect(reverse('workitout:user_page',args=[request.user.username]))
         
     else:
@@ -220,6 +252,7 @@ def register_profile(request):
     form = UserProfileForm()
 
     if request.method == 'POST':
+        print(request.POST)
         form = UserProfileForm(request.POST, request.FILES)
         if form.is_valid():
             user_profile = form.save(commit=False)
@@ -238,7 +271,7 @@ def exercises(request):
     context_dict={}
 
     query = ""
-    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':""}
+    filters  = {'muscle_group':"", 'equipment':"", 'ex_type':"", 'diff':""}
     if request.GET:
         request_parameters = request.GET
 
@@ -248,6 +281,8 @@ def exercises(request):
         filters['muscle_group'] = request_parameters.get('muscle_group',"")
         filters['equipment'] = request_parameters.get('equipment',"")
         filters['ex_type'] = request_parameters.get('ex_type',"")
+        filters['diff'] = request_parameters.get('diff',"")
+
     
     exercise_list, filter_objs = get_exercise_queryset(query, filters)
     context_dict['filter_objs'] = filter_objs
@@ -261,6 +296,9 @@ def exercises(request):
     if filters['ex_type'] != "":
         context_dict['t_filter'] = filter_objs['t_filter']
 
+    if filters['diff'] != "":
+        context_dict['diff_filter'] = filters['diff']
+
     for ex in exercise_list:
         
         ex.image1 = "images\\exercises\\" + ex.slug + "-1.png"
@@ -273,6 +311,7 @@ def exercises(request):
     context_dict['exercises'] = exercise_list
     context_dict['equipment'] = Equipment.objects.all().order_by('name')
     context_dict['muscle_groups'] = MuscleGroup.objects.all().order_by('name')
+    context_dict['difficulties'] =  ["beginner", "intermediate", "advanced"]
     context_dict['ex_type'] = ["push", "pull", "upper", "lower"]
 
     return render(request, 'workitout/exercises.html', context_dict)
@@ -311,7 +350,149 @@ def get_exercise_queryset(query=None, filters={}):
     except Tag.DoesNotExist:
         pass
 
+    if filters['diff'] != "":
+        diffs = {"beginner":1, "intermediate":2, "advanced":3}
+        qs4 = Exercise.objects.filter(difficulty=diffs[filters['diff']])
+        queryset = queryset.intersection(qs4)
+
+
     return list(set(queryset)), filter_objs
+
+
+
+def workouts(request):
+
+    context_dict={}
+
+    query = ""
+    filters  = {'tag':"", 'equipment':"", 'diff':"", 'dur':0}
+    if request.GET:
+        request_parameters = request.GET
+
+        query = request_parameters.get('workout_q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+        filters['tag'] = request_parameters.get('tag',"")
+        filters['equipment'] = request_parameters.get('equipment',"")
+        filters['diff'] = request_parameters.get('diff',"")
+        filters['dur'] = request_parameters.get('duration', 0)
+
+    
+    workout_list, filter_objs = get_workout_queryset(query, filters)
+    context_dict['filter_objs'] = filter_objs
+
+    if filters['tag'] != "":
+        context_dict['tag_filter'] = filter_objs['tag_filter']
+
+    if filters['equipment'] != "":
+        context_dict['eq_filter'] = filter_objs['eq_filter']
+
+    if filters['diff'] != "":
+        context_dict['diff_filter'] = filters['diff']
+
+    if filters['dur'] != 0:
+        print(filters['dur'])
+        context_dict['dur_filter'] = filters['dur']
+
+
+    
+    
+    context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
+    context_dict['workouts'] = workout_list
+    context_dict['equipment'] = Equipment.objects.all().order_by('name')
+    context_dict['tags'] = Tag.objects.all().order_by('name')
+    context_dict['difficulties'] =  ["beginner", "intermediate", "advanced"]
+
+
+
+
+    return render(request, 'workitout/workouts.html', context_dict)
+
+
+def get_workout_queryset(query=None, filters={}):
+
+    filter_objs = {}
+
+    queries = query.split(" ")
+    queryset = Workout.objects.filter( Q(title__icontains=queries[0]) )
+    for query in queries:
+        queryset = queryset.intersection(Workout.objects.filter( Q(title__icontains=query) ))
+    
+    try:
+        t = Tag.objects.get(name=filters['tag'])
+        filter_objs['tag_filter']= t
+        qs1 = Workout.objects.filter(tags__in=[t])
+        queryset = queryset.intersection(qs1)
+    except Tag.DoesNotExist:
+        pass
+    
+    try:
+        eq = Equipment.objects.get(slug=filters['equipment'])
+        filter_objs['eq_filter']= eq
+        qs3 = Workout.objects.filter(equipment__in=[eq])
+        queryset = queryset.intersection(qs3)
+    except Equipment.DoesNotExist:
+        pass
+
+    if filters['diff'] != "":
+        diffs = {"beginner":1, "intermediate":2, "advanced":3}
+        qs4 = Workout.objects.filter(difficulty=diffs[filters['diff']])
+        queryset = queryset.intersection(qs4)
+
+    if filters['dur'] != 0:
+        
+        qs4 = Workout.objects.filter(duration__lte=filters['dur'])
+        queryset = queryset.intersection(qs4)
+
+    
+
+
+    return list(set(queryset)), filter_objs
+
+
+def users(request):
+
+    context_dict={}
+
+    query = ""
+    verified = False
+    if request.GET:
+        request_parameters = request.GET
+        query = request_parameters.get('user_q',"")
+        if query != "":
+            context_dict['query'] = str(query)
+
+        if 'verified' in request_parameters.keys():
+            verified = True
+            context_dict['ver_filter'] = verified
+
+    user_list = get_user_queryset(query, verified)
+
+    context_dict['username'] = request.user.username
+    context_dict['randvar'] = True
+    context_dict['users'] = user_list
+    context_dict['user_profiles'] = UserProfile.objects.filter(user__in=user_list)
+
+    return render(request, 'workitout/users.html', context_dict)
+
+
+def get_user_queryset(query=None, verified=False):
+    
+    queryset = User.objects.filter(Q(username__icontains=query))
+
+    user_profiles = UserProfile.objects.filter(user__in=queryset)
+
+    queryset = list(queryset)
+
+    for user_p in user_profiles:
+        if verified:
+            if not user_p.isVerified:
+                queryset.remove(user_p.user)
+
+    return list(set(queryset))
+
+
 
 
 
@@ -437,16 +618,29 @@ def exercise_page(request, exercise_title_slug):
         # parse exercise object and add individual fields to context dict
         context_dict['title'] = exercise.title
         
-        diff_dict = {1:'Easy', 2:'Medium', 3:'Hard'} #can change these
-        context_dict['difficulty'] = diff_dict[exercise.difficulty]
-
+        context_dict['difficulty'] = exercise.difficulty
         context_dict['primer'] = exercise.description.primer
-        context_dict['steps'] = exercise.description.steps.split('$$')
+        steps_list=exercise.description.steps.split('$$')
+        
+        class steps_obj:
+            def __init__(self, step,num):
+                self.step=step
+                self.num=num
+
+        steps_obj_list=[]
+        for i in range(len(steps_list)):
+            steps_obj_list.append(steps_obj(steps_list[i],i+1))
+
+        context_dict['steps'] = steps_obj_list
         context_dict['tips'] = exercise.description.tips.split('$$')
         if context_dict['tips'] == ['']:
             context_dict['tips'] = None
 
-        context_dict['muscle_group'] = exercise.muscle_group
+
+
+        mg = exercise.muscle_group.__str__()
+        
+        context_dict['muscle_group'] = mg.capitalize()
         context_dict['muscles'] = [m.name for m in exercise.muscles.all()]
         context_dict['tags'] = [t.name for t in exercise.tags.all()]
         context_dict['equipment'] = [e.name for e in exercise.equipment.all()]
@@ -474,7 +668,7 @@ def workout_page(request, workout_id,creator):
         if request.user.is_authenticated:
             currentProfile = UserProfile.objects.get(user=request.user)
             if workout in currentProfile.saved.all():
-                print("in here")
+                
                 context_dict['is_saved'] = True
             else:
                 context_dict['is_saved'] = False
@@ -490,6 +684,8 @@ def workout_page(request, workout_id,creator):
         context_dict['creator'] = workout.creator.username
         context_dict['likes'] = len(workout.likes.all())
         context_dict['tags'] = [t.name for t in workout.tags.all()]
+        context_dict['equipment'] = [eq.name for eq in workout.equipment.all()]
+
 
 
         
@@ -510,15 +706,8 @@ def workout_page(request, workout_id,creator):
             ex.steps=ex.exercise.description.steps.split('$$')
             ex.tips=ex.exercise.description.tips.split('$$')
             
-            if finders.find("images\\exercises\\" + ex.exercise.slug + "-1.png")==None:
-                ex.image1="images\\image_not_found.png"
-            else:
-                ex.image1 = "images\\exercises\\" + ex.exercise.slug + "-1.png"
-
-            if finders.find("images\\exercises\\" + ex.exercise.slug + "-2.png")==None:
-                 ex.image2 ="images\\image_not_found.png"
-            else:
-                ex.image2 = "images\\exercises\\" + ex.exercise.slug + "-2.png"
+            ex.image1="images\\exercises\\" + ex.exercise.slug + "-1.png"
+            ex.image2="images\\exercises\\" + ex.exercise.slug + "-2.png"
             exercises.append(ex)
 
 
@@ -531,23 +720,5 @@ def workout_page(request, workout_id,creator):
 
     return render(request, 'workitout/workout.html', context=context_dict)
 
-
-def get_workout_queryset(query=None):
-
-    queryset = []
-
-    queries = query.split(" ") # 'shoulder workout 2020' becomes ['shoulder', 'workout', '2020']
-
-    for q in queries:
-        posts = Workout.objects.filter( 
-            Q(title__icontains=q) | 
-            Q(description__icontains=q) 
-            ).distinct()
-        for post in posts:
-            queryset.append(post)
-
-    # create unique set and then convert to list
-
-    return list(set(queryset)) 
 
 
