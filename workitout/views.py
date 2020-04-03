@@ -53,25 +53,25 @@ def create_workout(request):
     # gona be a post request or nothing
     form = CreateWorkoutForm(request.POST or None)
     if form.is_valid():
-        obj = form.save(commit=False)
-        obj.creator = user
-    
         workout_list = Workout.objects.order_by("creator")
         maxID = 0
-        has_created = False
-
         for workout in workout_list:
             if workout.creator == user:
-                has_created = True
                 if workout.id > maxID:
                     maxID = workout.id
-
-        obj.workout = Workout.objects.get(id=(maxID))
-        obj.id = maxID
-        obj.save(update_fields=['title','description','isPrivate'])
-        
-        form = CreateWorkoutForm()
-        return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+        workout = Workout.objects.get(id=(maxID))
+        exercises = [(exiw.exercise.title) for exiw in ExInWorkout.objects.filter(workout=workout)]
+        if len(exercises) >= 2:
+            obj = form.save(commit=False)
+            obj.creator = user
+            obj.workout = workout
+            obj.id = maxID
+            obj.save(update_fields=['title','description','isPrivate'])
+            
+            form = CreateWorkoutForm()
+            return redirect('workout/' + obj.creator.username + "/" + str(maxID) + "/")
+        else:
+            context['error'] = True
     else:
         obj = form.save(commit=False)
         obj.creator = user
@@ -127,7 +127,7 @@ def search(request):
     context_dict['randvar'] = True
 
     top_users = [up.user for up in UserProfile.objects.filter(isVerified=True)]
-    print(top_users)
+    
     if len(top_users) >= 5:
         context_dict['top_users'] = random.sample(top_users, 5)
     else:
@@ -168,10 +168,15 @@ def edit_profile(request):
         profile_form=EditUserProfileForm(request.POST,request.FILES,instance=request.user.userprofile)
 
         if form.is_valid() and profile_form.is_valid():
-            user_form = form.save()
+            #user_form = form.save()
+
+            user_form = form.save(commit=False)
+            user_form.save()
+            
             profile = profile_form.save(commit=False)
             profile.user = user_form
             profile.save()
+            
             return redirect(reverse('workitout:user_page',args=[request.user.username]))
         
     else:
@@ -612,16 +617,29 @@ def exercise_page(request, exercise_title_slug):
         # parse exercise object and add individual fields to context dict
         context_dict['title'] = exercise.title
         
-        diff_dict = {1:'Easy', 2:'Medium', 3:'Hard'} #can change these
-        context_dict['difficulty'] = diff_dict[exercise.difficulty]
-
+        context_dict['difficulty'] = exercise.difficulty
         context_dict['primer'] = exercise.description.primer
-        context_dict['steps'] = exercise.description.steps.split('$$')
+        steps_list=exercise.description.steps.split('$$')
+        
+        class steps_obj:
+            def __init__(self, step,num):
+                self.step=step
+                self.num=num
+
+        steps_obj_list=[]
+        for i in range(len(steps_list)):
+            steps_obj_list.append(steps_obj(steps_list[i],i+1))
+
+        context_dict['steps'] = steps_obj_list
         context_dict['tips'] = exercise.description.tips.split('$$')
         if context_dict['tips'] == ['']:
             context_dict['tips'] = None
 
-        context_dict['muscle_group'] = exercise.muscle_group
+
+
+        mg = exercise.muscle_group.__str__()
+        
+        context_dict['muscle_group'] = mg.capitalize()
         context_dict['muscles'] = [m.name for m in exercise.muscles.all()]
         context_dict['tags'] = [t.name for t in exercise.tags.all()]
         context_dict['equipment'] = [e.name for e in exercise.equipment.all()]
@@ -649,7 +667,7 @@ def workout_page(request, workout_id,creator):
         if request.user.is_authenticated:
             currentProfile = UserProfile.objects.get(user=request.user)
             if workout in currentProfile.saved.all():
-                print("in here")
+                
                 context_dict['is_saved'] = True
             else:
                 context_dict['is_saved'] = False

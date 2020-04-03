@@ -143,7 +143,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # Additional attributes we wish to include
-    bio = models.TextField()
+    bio = models.TextField(blank=True)
     picture = models.ImageField(upload_to='profile_images', blank=True)
     saved = models.ManyToManyField(Workout)
     followers = models.ManyToManyField(User, related_name='user_followers', blank=True)

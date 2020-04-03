@@ -11,6 +11,12 @@
 		<div class="col-lg-7 offset-lg-1">
             <form id="workout_form" method="post" action="/workitout/create-workout">{% csrf_token %}
 
+                {% if error == True %}
+                <div class="alert alert-warning">
+                    <strong>Warning!</strong> A workout must contain at least 2 exercises.
+                  </div>
+                {% endif %}
+
                 {% for hidden in form.hidden_fields %} 
                     {{ hidden }} 
                 {% endfor %} 
@@ -21,15 +27,16 @@
     
                     <div class="form-group">
                         <label>{{ field.help_text }}</label>
-                        <div class="form-control">{{ field }}</div>
+                        <div class="form-control">{{ field.name }}</div>
                     </div>
                     
                 {% endfor %}
                 
-                <button class="btn btn-success" type="button" onclick="window.open('/workitout/create-workout/add-exercise','_blank')">Add Exercise</button>
+                <button class="btn btn-success" type="button" onclick="window.open('/workitout/create-workout/add-exercise','_blank')">Add Exercise</button> <br> <br>
                 
+
                 <!--<button class="btn btn-primary" onclick="">Create Workout</button>-->
-                <input type="submit" name="submit" value="Create Workout" />
+                <input class="btn btn-info" type="submit" name="submit" value="Create Workout" />
 
             </form>
         </div>
