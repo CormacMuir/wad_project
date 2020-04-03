@@ -16,7 +16,7 @@
     {% for user_p in user_profiles %}
         {% if user_p.user == user %}
 
-            <a href="/workitout/user/{{ user.id }}/">
+            <a href="/workitout/user/{{ user.username }}/">
                 <div class="card m-2">
 
                     <img class="card-img-top" src="{{ user_p.picture.url }}">

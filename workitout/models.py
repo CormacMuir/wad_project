@@ -144,7 +144,7 @@ class UserProfile(models.Model):
 
     # Additional attributes we wish to include
     bio = models.TextField(blank=True)
-    picture = models.ImageField(upload_to='profile_images', blank=True)
+    picture = models.ImageField(upload_to='profile_images', default="profile_images/default_user.png")
     saved = models.ManyToManyField(Workout)
     followers = models.ManyToManyField(User, related_name='user_followers', blank=True)
     following = models.ManyToManyField(User, related_name='user_following', blank=True)

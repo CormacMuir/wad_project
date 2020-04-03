@@ -48,11 +48,11 @@
                       <h6 class="card-subtitle mb-2 text-muted">
                         <b>Difficulty : </b>
                         {%if workout.difficulty == 1 %}
-                        <span class="badge badge-pill badge-success">Easy</a></span>
+                        <span class="badge badge-pill badge-success">Beginner</a></span>
                         {%elif workout.difficulty == 2 %}
-                        <span class="badge badge-pill badge-warning">Medium</a></span>
+                        <span class="badge badge-pill badge-warning">Intermediate</a></span>
                         {%else%}
-                        <span class="badge badge-pill badge-danger">Hard</a></span>
+                        <span class="badge badge-pill badge-danger">Advanced</a></span>
                         {%endif%}
                         
                         
@@ -122,11 +122,11 @@
                                         <p class="card-text"> Targets: {{ex.exercise.muscle_group}} </p>
                                         <p class="card-text">Difficulty : 
                                           {%if ex.exercise.difficulty == 1 %}
-                                            <span class="badge badge-pill badge-success">Easy</a></span>
+                                            <span class="badge badge-pill badge-success">Beginner</a></span>
                                           {%elif ex.exercise.difficulty == 2 %}
-                                            <span class="badge badge-pill badge-warning">Medium</a></span>
+                                            <span class="badge badge-pill badge-warning">Intermediate</a></span>
                                           {%else%}
-                                            <span class="badge badge-pill badge-danger">Hard</a></span>
+                                            <span class="badge badge-pill badge-danger">Advanced</a></span>
                                           {%endif%}</p>           
                                         
                                     </div>

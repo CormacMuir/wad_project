@@ -252,6 +252,7 @@ def register_profile(request):
     form = UserProfileForm()
 
     if request.method == 'POST':
+        print(request.POST)
         form = UserProfileForm(request.POST, request.FILES)
         if form.is_valid():
             user_profile = form.save(commit=False)

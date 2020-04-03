@@ -23,11 +23,11 @@
                 <h5 class="card-title">{{exercise.title}}</h5>
                 <p class="card-text"> Targets {{exercise.muscle_group}} </p>
                 <p class="card-text">Difficulty Level {%if exercise.difficulty == 1 %}
-                    <span class="badge badge-pill badge-success">Easy</a></span>
+                    <span class="badge badge-pill badge-success">Beginner</a></span>
                     {%elif exercise.difficulty == 2 %}
-                    <span class="badge badge-pill badge-warning">Medium</a></span>
+                    <span class="badge badge-pill badge-warning">Intermediate</a></span>
                     {%else%}
-                    <span class="badge badge-pill badge-danger">Hard</a></span>
+                    <span class="badge badge-pill badge-danger">Advanced</a></span>
                     {%endif%}</p>           
                 <p class="card-text">{{exercise.description.primer}}</p>
             </div>
